@@ -33,7 +33,15 @@ public:
             {"STOP",   14}
     };
 
-    map<string, int> tabelaDeDiretivas = {};
+    map<string, int> tabelaDeDiretivas = {
+            {"SECTION",  0},
+            {"SPACE",    1},
+            {"CONST",    1},
+            {"EQU",      0},
+            {"IF",       0},
+            {"MACRO",    0},
+            {"ENDMACRO", 0}
+    };
     fstream arquivo;
 
     explicit Montador(const char *nomeArquivo) {
@@ -42,10 +50,10 @@ public:
             throw "Arquivo não encontrado";
     }
 
-    static int tamInstrucao(const string& instrucao) {
+    static int tamInstrucao(const string &instrucao) {
         if (instrucao == "COPY") {
             return 3;
-        } else if (instrucao == "STOP") {
+        } else if (instrucao == "STOP" or instrucao == "SPACE" or instrucao == "CONST") {
             return 1;
         } else {
             return 2;
@@ -82,6 +90,7 @@ public:
         int contador_posicao = 0, contador_linha = 1;
         // Enquanto arquivo fonte não chegou ao fim
         while (arquivo) {
+            if( arquivo.eof() ) break;
             // Obtém uma linha do fonte
             getline(arquivo, linha);
 
@@ -89,14 +98,13 @@ public:
             Linha l = coletaTermosDaLinha(linha);
 
             // Se existe rótulo
-            int pos = linha.find(':');
             if (!l.rotulo.empty()) {
                 if (tabelaDeSimbolos.end() != tabelaDeSimbolos.find(l.rotulo)) {
                     // Se já existe o simbolo na tabela de simbolos
                     throw "Error -> simbolo redefinido";
                 } else {
                     // Se não Insere rótulo e contador_posição na TS
-                    tabelaDeSimbolos[l.rotulo] = contador_posicao + tamInstrucao(l.operacao);
+                    tabelaDeSimbolos[l.rotulo] = contador_posicao;
                 }
 
             }
@@ -107,11 +115,14 @@ public:
             } else {
                 // Procura operação na tabela de diretivas
                 if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
+                    contador_posicao += tamInstrucao(l.operacao);
                     // TODO Chamar subrotina contador_posição = valor retornado pela subrotina
                 } else {
                     throw "Erro -> Operação não identificada";
                 }
             }
+
+            contador_linha += 1;
         }
 
     }
