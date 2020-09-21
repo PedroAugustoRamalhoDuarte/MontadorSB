@@ -42,11 +42,16 @@ public:
             throw "Arquivo não encontrado";
     }
 
-    int tamInstrucao(string instrucao) {
-        return 2;
+    static int tamInstrucao(const string& instrucao) {
+        if (instrucao == "COPY") {
+            return 3;
+        } else if (instrucao == "STOP") {
+            return 1;
+        } else {
+            return 2;
+        }
     }
 
-    // Retorna o rótulo, operação, operando1, operando 2
     static Linha coletaTermosDaLinha(const string &linha) {
         string elementos[4];
         int cont = 0;
@@ -79,31 +84,29 @@ public:
         while (arquivo) {
             // Obtém uma linha do fonte
             getline(arquivo, linha);
-            Linha l = coletaTermosDaLinha(linha);
 
-            // TODO coletar instrucao
-            string operacao = "SUB";
+            // Separa os elementos da linha
+            Linha l = coletaTermosDaLinha(linha);
 
             // Se existe rótulo
             int pos = linha.find(':');
-            if (string::npos != pos) {
-                string rotulo = linha.substr(0, pos);
-                if (tabelaDeSimbolos.end() != tabelaDeSimbolos.find(rotulo)) {
+            if (!l.rotulo.empty()) {
+                if (tabelaDeSimbolos.end() != tabelaDeSimbolos.find(l.rotulo)) {
                     // Se já existe o simbolo na tabela de simbolos
                     throw "Error -> simbolo redefinido";
                 } else {
                     // Se não Insere rótulo e contador_posição na TS
-                    tabelaDeSimbolos[rotulo] = contador_posicao + tamInstrucao(operacao);
+                    tabelaDeSimbolos[l.rotulo] = contador_posicao + tamInstrucao(l.operacao);
                 }
 
             }
 
             // Procura operação na tabela de instruções
-            if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(operacao)) {
-                contador_posicao += tamInstrucao(operacao);
+            if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
+                contador_posicao += tamInstrucao(l.operacao);
             } else {
                 // Procura operação na tabela de diretivas
-                if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(operacao)) {
+                if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
                     // TODO Chamar subrotina contador_posição = valor retornado pela subrotina
                 } else {
                     throw "Erro -> Operação não identificada";
