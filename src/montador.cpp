@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <map>
 #include <string>
 #include <fstream>
@@ -6,25 +5,32 @@
 
 using namespace std;
 
+struct Linha {
+    string rotulo;
+    string operacao;
+    string op1;
+    string op2;
+};
+
 class Montador {
 
 public:
     map<string, int> tabelaDeSimbolos = {};
     map<string, int> tabelaDeIntrucoes = {
-            {"ADD", 1},
-            {"SUB", 2},
-            {"MULT", 3},
-            {"DIV", 4},
-            {"JMP", 5},
-            {"JMPN", 6},
-            {"JMPP", 7},
-            {"JMPZ", 8},
-            {"COPY", 9},
-            {"LOAD", 10},
-            {"STORE", 11},
-            {"INPUT", 12},
+            {"ADD",    1},
+            {"SUB",    2},
+            {"MULT",   3},
+            {"DIV",    4},
+            {"JMP",    5},
+            {"JMPN",   6},
+            {"JMPP",   7},
+            {"JMPZ",   8},
+            {"COPY",   9},
+            {"LOAD",   10},
+            {"STORE",  11},
+            {"INPUT",  12},
             {"OUTPUT", 13},
-            {"STOP", 14}
+            {"STOP",   14}
     };
 
     map<string, int> tabelaDeDiretivas = {};
@@ -40,6 +46,32 @@ public:
         return 2;
     }
 
+    // Retorna o rótulo, operação, operando1, operando 2
+    static Linha coletaTermosDaLinha(const string &linha) {
+        string elementos[4];
+        int cont = 0;
+        bool jaPulou = false;
+        // Se não tiver rótulo, começa preenchendo instrução
+        if (string::npos == linha.find(':'))
+            cont++;
+
+        for (char ch : linha) {
+            if (ch == ';') {
+                break;
+            }
+            if (ch == ' ' or ch == ',' or (ch == ':' and cont == 0)) {
+                if (!jaPulou)
+                    cont++;
+                jaPulou = true;
+            } else {
+                jaPulou = false;
+                elementos[cont] += ch;
+            }
+        }
+        Linha l = {elementos[0], elementos[1], elementos[2], elementos[3]};
+        return l;
+    }
+
     void primeiraPassagem() {
         string linha;
         int contador_posicao = 0, contador_linha = 1;
@@ -47,6 +79,7 @@ public:
         while (arquivo) {
             // Obtém uma linha do fonte
             getline(arquivo, linha);
+            Linha l = coletaTermosDaLinha(linha);
 
             // TODO coletar instrucao
             string operacao = "SUB";
