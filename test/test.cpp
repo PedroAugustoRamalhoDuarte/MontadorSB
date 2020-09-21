@@ -10,6 +10,11 @@ TEST_CASE("Primeira Passagem", "Montador") {
 
         REQUIRE_THROWS_WITH(montador.primeiraPassagem(), "Error -> simbolo redefinido");
     }
+    SECTION("Operação não identificada") {
+        Montador montador("../test/files/operacaoInexistente.asm");
+
+        REQUIRE_THROWS_WITH(montador.primeiraPassagem(), "Erro -> Operação não identificada");
+    }
 }
 
 
