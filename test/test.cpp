@@ -11,6 +11,7 @@ bool map_compare(Map const &lhs, Map const &rhs) {
 }
 
 TEST_CASE("Primeira Passagem Erros", "Montador") {
+
     SECTION("Rótulo Duplicado") {
         Montador montador("../test/files/rotuloDuplicado.asm");
 
@@ -23,17 +24,40 @@ TEST_CASE("Primeira Passagem Erros", "Montador") {
 }
 
 TEST_CASE("Primeira Passagem sem Erros", "") {
-    Montador montador("../test/files/exemplo1.asm");
-    montador.primeiraPassagem();
-    map<string, int> tabelaDeSimbolos = {
-            {"N1", 13},
-            {"N2", 14},
-            {"N3", 15},
-    };
-    CHECK(montador.tabelaDeSimbolos["N1"] == 13);
-    CHECK(montador.tabelaDeSimbolos["N2"] == 14);
-    CHECK(montador.tabelaDeSimbolos["N3"] == 15);
-    REQUIRE(map_compare(montador.tabelaDeSimbolos, tabelaDeSimbolos));
+    SECTION("Exemplo1") {
+        Montador montador("../test/files/exemplo1.asm");
+        montador.primeiraPassagem();
+        map<string, int> tabelaDeSimbolos = {
+                {"N1", 13},
+                {"N2", 14},
+                {"N3", 15},
+        };
+        CHECK(montador.tabelaDeSimbolos["N1"] == 13);
+        CHECK(montador.tabelaDeSimbolos["N2"] == 14);
+        CHECK(montador.tabelaDeSimbolos["N3"] == 15);
+        REQUIRE(map_compare(montador.tabelaDeSimbolos, tabelaDeSimbolos));
+    }SECTION("Exemplo 2") {
+        Montador montador("../test/files/exemplo2.asm");
+        montador.primeiraPassagem();
+
+        CHECK(montador.tabelaDeSimbolos["FRONT"] == 10);
+        CHECK(montador.tabelaDeSimbolos["FINAL"] == 30);
+        CHECK(montador.tabelaDeSimbolos["ZERO"] == 33);
+        CHECK(montador.tabelaDeSimbolos["ONE"] == 34);
+        CHECK(montador.tabelaDeSimbolos["OLDER"] == 35);
+        CHECK(montador.tabelaDeSimbolos["OLD"] == 36);
+        CHECK(montador.tabelaDeSimbolos["NEW"] == 37);
+        CHECK(montador.tabelaDeSimbolos["LIMIT"] == 38);
+    }SECTION("Exemplo 3") {
+        Montador montador("../test/files/exemplo3.asm");
+        montador.primeiraPassagem();
+
+        CHECK(montador.tabelaDeSimbolos["FAT"] == 4);
+        CHECK(montador.tabelaDeSimbolos["FIM"] == 18);
+        CHECK(montador.tabelaDeSimbolos["AUX"] == 21);
+        CHECK(montador.tabelaDeSimbolos["N"] == 22);
+        CHECK(montador.tabelaDeSimbolos["ONE"] == 23);
+    }
 }
 
 TEST_CASE("ColetaTermos da Linha", "Montador::colataTermosDaLinha") {
