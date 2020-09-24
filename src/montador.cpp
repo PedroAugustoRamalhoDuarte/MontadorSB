@@ -34,13 +34,11 @@ public:
     };
 
     map<string, int> tabelaDeDiretivas = {
-            {"SECTION",  0},
-            {"SPACE",    1},
-            {"CONST",    1},
-            {"EQU",      0},
-            {"IF",       0},
-            {"MACRO",    0},
-            {"ENDMACRO", 0}
+            {"SECTION", 0},
+            {"SPACE",   1},
+            {"CONST",   1},
+            {"EQU",     0},
+            {"IF",      0}
     };
     fstream arquivo;
 
@@ -55,8 +53,21 @@ public:
             return 3;
         } else if (instrucao == "STOP" or instrucao == "SPACE" or instrucao == "CONST") {
             return 1;
+        } else if (instrucao == "SECTION" or instrucao == "EQU" or instrucao == "IF") {
+            return 0;
         } else {
             return 2;
+        }
+    };
+
+    // TODO testar essa funcao
+    static int isOperacaoValida(const Linha &linha) {
+        if (linha.operacao == "COPY") {
+            return !linha.op1.empty() and !linha.op2.empty();
+        } else if (linha.operacao == "STOP") {
+            return linha.op1.empty() and linha.op2.empty();
+        } else {
+            return !linha.op1.empty() and linha.op2.empty();;
         }
     }
 
@@ -90,7 +101,7 @@ public:
         int contador_posicao = 0, contador_linha = 1;
         // Enquanto arquivo fonte não chegou ao fim
         while (arquivo) {
-            if( arquivo.eof() ) break;
+            if (arquivo.eof()) break;
             // Obtém uma linha do fonte
             getline(arquivo, linha);
 
@@ -124,10 +135,62 @@ public:
 
             contador_linha += 1;
         }
-
+        // Voltar arquivo para o começo
+        arquivo.clear();
+        arquivo.seekg(0, ios::beg);
     }
 
-    void segundaPassagem() {
-        // Montar o código
+    string segundaPassagem() {
+        string linha;
+        string code;
+        int contador_posicao = 0, contador_linha = 1;
+        // Enquanto arquivo fonte não chegou ao fim
+        while (arquivo) {
+            if (arquivo.eof()) break;
+            // Obtém uma linha do fonte
+            getline(arquivo, linha);
+
+            // Separa os elementos da linha
+            Linha l = coletaTermosDaLinha(linha);
+
+            // Para cada operando
+            if (l.operacao != "CONST" and l.operacao != "SECTION") {
+                if ((tabelaDeSimbolos.end() == tabelaDeSimbolos.find(l.op1) and !l.op1.empty()) or (
+                        tabelaDeSimbolos.end() == tabelaDeSimbolos.find(l.op2) and !l.op2.empty())) {
+                    throw "Erro -> Símbolo indefino";
+                }
+            }
+            // Procura operação na tabela de instruções
+            if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
+                contador_posicao += tamInstrucao(l.operacao);
+                if (isOperacaoValida(l)) {
+                    code += to_string(tabelaDeIntrucoes[l.operacao]) + ' ';
+                    if (!l.op1.empty()) {
+                        code += to_string(tabelaDeSimbolos[l.op1]) + ' ';
+                    }
+                    if (!l.op2.empty()) {
+                        code += to_string(tabelaDeSimbolos[l.op2]) + ' ';
+                    }
+                } else {
+                    throw "Erro -> Operando inválido";
+                }
+
+            } else {
+                if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
+                    if (l.operacao == "CONST") {
+                        code += l.op1 + ' ';
+                    } else if (l.operacao == "SPACE") {
+                        code += "0 ";
+                    }
+                    // Chama subrotina que executa a diretiva
+                    // Contador_posição = valor retornado pela subrotina
+                } else {
+                    throw "Erro -> operação não identificada";
+                }
+            }
+            contador_linha += 1;
+        }
+        return code;
     }
+
 };

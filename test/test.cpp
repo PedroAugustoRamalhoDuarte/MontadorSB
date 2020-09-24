@@ -60,6 +60,17 @@ TEST_CASE("Primeira Passagem sem Erros", "") {
     }
 }
 
+TEST_CASE("Segunda Passagem sem erros", "") {
+    SECTION("bin") {
+        Montador montador("../test/files/bin.asm");
+        montador.primeiraPassagem();
+
+        REQUIRE(montador.segundaPassagem() ==
+                "12 29 10 29 4 28 11 30 3 28 11 31 10 29 2 31 11 31 13 31 9 30 29 10 29 7 4 14 2 0 0 0 ");
+    }
+}
+
+
 TEST_CASE("ColetaTermos da Linha", "Montador::colataTermosDaLinha") {
     SECTION("Linha completa") {
         Linha linha = Montador::coletaTermosDaLinha("CPY: COPY N1, N4 ;comentario qualquer");
