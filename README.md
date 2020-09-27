@@ -14,3 +14,18 @@ do código (#004)
 (COPY A, B) (#005)
 - Poder criar um r´otulo, dar quebra de linha e continuar a linha depois (o r´otulo
 seria equivalente a linha seguinte) (#006)
+
+
+
+# Erros do montador:
+- declarações e rótulos ausentes;
+- declarações e rótulos repetidos OK;
+- diretivas inválidas;
+- instruções inválidas;
+- diretivas ou instruções na seção errada OK;
+- instruções com a quantidade de operando errado;
+- instruções com o tipo de operando inválido;
+- tokens inválidos;
+- dois rótulos na mesma linha;
+- seção TEXT faltante;
+- seção inválida;
