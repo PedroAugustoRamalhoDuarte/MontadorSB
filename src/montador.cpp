@@ -75,6 +75,8 @@ public:
             if (linha.operacao == "CONST") {
                 // Validação da operação CONST (#003)
                 isValida = isValida and isInteger(linha.op1);
+            } else if (linha.operacao == "CONST") {
+                isValida = isValida and (linha.op1 == "TEXT" or linha.op1 == "DATA");
             }
             return isValida;
         }
