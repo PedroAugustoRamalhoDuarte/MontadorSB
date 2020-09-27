@@ -2,6 +2,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include "utils.cpp"
+#include "erro.cpp"
 
 using namespace std;
 
@@ -16,6 +18,7 @@ class Montador {
 
 public:
     map<string, int> tabelaDeSimbolos = {};
+    // Tabela de instrucoes com o nome de instrução/opcode
     map<string, int> tabelaDeIntrucoes = {
             {"ADD",    1},
             {"SUB",    2},
@@ -33,6 +36,7 @@ public:
             {"STOP",   14}
     };
 
+    // Tabela de diretivas com o nome da diretiva e o tamanho da diretiva
     map<string, int> tabelaDeDiretivas = {
             {"SECTION", 0},
             {"SPACE",   1},
@@ -67,7 +71,12 @@ public:
         } else if (linha.operacao == "STOP") {
             return linha.op1.empty() and linha.op2.empty();
         } else {
-            return !linha.op1.empty() and linha.op2.empty();;
+            bool isValida = !linha.op1.empty() and linha.op2.empty();
+            if (linha.operacao == "CONST") {
+                // Validação da operação CONST (#003)
+                isValida = isValida and isInteger(linha.op1);
+            }
+            return isValida;
         }
     }
 
@@ -81,6 +90,7 @@ public:
 
         for (char ch : linha) {
             if (ch == ';') {
+                // Ignora os comentários (#004)
                 break;
             }
             if (ch == ' ' or ch == ',' or (ch == ':' and cont == 0)) {
@@ -92,7 +102,11 @@ public:
                 elementos[cont] += ch;
             }
         }
-        Linha l = {elementos[0], elementos[1], elementos[2], elementos[3]};
+        // Transformar todos os elementos em caixa alta #0001
+        Linha l = {toUpperCase(elementos[0]),
+                   toUpperCase(elementos[1]),
+                   toUpperCase(elementos[2]),
+                   toUpperCase(elementos[3])};
         return l;
     }
 
