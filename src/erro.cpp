@@ -1,4 +1,9 @@
+#ifndef MONTADOR_ERROR
+#define MONTADOR_ERROR
+
 #include <string>
+
+using namespace std;
 
 class MontadorErro : public std::exception {
 public:
@@ -23,3 +28,5 @@ public:
 const char *MontadorErro::what() const noexcept {
     return this->menssagem.c_str();
 }
+
+#endif

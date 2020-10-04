@@ -7,22 +7,7 @@
 
 using namespace std;
 
-
-struct Linha {
-    string rotulo;
-    string operacao;
-    string op1;
-    string op2;
-};
-
 class Montador {
-
-    enum SECAO {
-        NENHUMA,
-        TEXT,
-        DATA
-    } secao;
-
 public:
     map<string, int> tabelaDeSimbolos = {};
     // Tabela de instrucoes com o nome de instrução/opcode
@@ -56,7 +41,7 @@ public:
     explicit Montador(const char *nomeArquivo) {
         arquivo.open(nomeArquivo, ios::in);
         if (!arquivo)
-            throw "Arquivo não encontrado";
+            throw "ArquivoFisico não encontrado";
     }
 
     static int tamInstrucao(const string &instrucao) {
@@ -89,82 +74,9 @@ public:
         }
     }
 
-
-    static Linha coletaTermosDaLinha(const string &linha) {
-        string elementos[4];
-        int cont = 0;
-        bool jaPulou = false;
-        // Se não tiver rótulo, começa preenchendo instrução
-        if (string::npos == linha.find(':'))
-            cont++;
-
-        for (char ch : linha) {
-            if (ch == ';') {
-                // Ignora os comentários (#004)
-                break;
-            }
-            if (ch == ' ' or ch == ',' or (ch == ':' and cont == 0)) {
-                if (!jaPulou)
-                    cont++;
-                jaPulou = true;
-            } else {
-                jaPulou = false;
-                elementos[cont] += ch;
-            }
-        }
-        // Transformar todos os elementos em caixa alta #0001
-        Linha l = {toUpperCase(elementos[0]),
-                   toUpperCase(elementos[1]),
-                   toUpperCase(elementos[2]),
-                   toUpperCase(elementos[3])};
-        return l;
-    }
-
-    // Métodos para controle de seção
-    bool isSecaoValida(string s) {
-        return (s == "TEXT" or s == "DATA");
-    }
-
-    void setSecao(string s) {
-        if (isSecaoValida(s)) {
-            if (s == "TEXT") {
-                secao = TEXT;
-            } else if (s == "DATA") {
-                secao = DATA;
-            }
-        } else {
-            // TODO MONTAR ESSE ERRO
-            throw MontadorErro("Seção Inválida", "TIPO", "linha", 0);
-        }
-    }
-
-    void analisaSecao(const string &operacao, const string op1, const string &linha, int numLinha) {
-        if (operacao != "SECTION") {
-            switch (secao) {
-                case NENHUMA:
-                    if (operacao == "EQU") {
-                        throw MontadorErro("Operação fora da seção adequada", "TIPO", linha, numLinha);
-                    }
-                    break;
-                case TEXT:
-                    if (operacao == "EQU" or operacao == "SPACE" or operacao == "CONST") {
-                        throw MontadorErro("Operação fora da seção adequada", "TIPO", linha, numLinha);
-                    };
-                    break;
-                case DATA:
-                    if (operacao != "SPACE" and operacao != "CONST") {
-                        throw MontadorErro("Operação fora da seção adequada", "TIPO", linha, numLinha);
-                    };
-                    break;
-            }
-        } else {
-            setSecao(op1);
-        }
-    }
-
     void primeiraPassagem() {
         string linha;
-        secao = NENHUMA;
+        bool isInsideValid = true;
         int contador_posicao = 0, contador_linha = 1;
         // Enquanto arquivo fonte não chegou ao fim
         while (arquivo) {
@@ -175,8 +87,6 @@ public:
             // Separa os elementos da linha
             Linha l = coletaTermosDaLinha(linha);
 
-            analisaSecao(l.operacao, l.op1, linha, contador_linha);
-
             // Se existe rótulo
             if (!l.rotulo.empty()) {
                 if (tabelaDeSimbolos.end() != tabelaDeSimbolos.find(l.rotulo)) {
@@ -184,7 +94,13 @@ public:
                     throw MontadorErro("Símbolo Redefinido", "TIPO", linha, contador_linha);
                 } else {
                     // Se não Insere rótulo e contador_posição na TS
-                    tabelaDeSimbolos[l.rotulo] = contador_posicao;
+                    if (l.operacao == "EQU") {
+                        // Na Diretiva EQU guardar o valor da operação
+                        tabelaDeSimbolos[l.rotulo] = stoi(l.op1);
+                    } else {
+                        tabelaDeSimbolos[l.rotulo] = contador_posicao;
+                    }
+
                 }
 
             }
@@ -196,7 +112,6 @@ public:
                 // Procura operação na tabela de diretivas
                 if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
                     contador_posicao += tamInstrucao(l.operacao);
-                    // TODO Chamar subrotina contador_posição = valor retornado pela subrotina
                 } else {
                     throw MontadorErro("Operação não identificada", "TIPO", linha, contador_linha);
                 }

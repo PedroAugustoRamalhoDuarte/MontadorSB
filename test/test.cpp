@@ -2,6 +2,7 @@
 
 #include "catch.hpp"
 #include "../src/montador.cpp"
+#include "../src/preProcessador.cpp"
 
 template<typename Map>
 bool map_compare(Map const &lhs, Map const &rhs) {
@@ -9,6 +10,12 @@ bool map_compare(Map const &lhs, Map const &rhs) {
            && std::equal(lhs.begin(), lhs.end(),
                          rhs.begin());
 }
+
+TEST_CASE("Pré Processamento") {
+    PreProcessador preProcessador("../test/files/preProcess.asm", true);
+    preProcessador.run();
+}
+
 
 TEST_CASE("Primeira Passagem Erros", "Montador") {
 
@@ -73,19 +80,19 @@ TEST_CASE("Segunda Passagem sem erros", "") {
 
 TEST_CASE("ColetaTermos da Linha", "Montador::colataTermosDaLinha") {
     SECTION("Linha completa") {
-        Linha linha = Montador::coletaTermosDaLinha("CPY: COPY N1, N4 ;comentario qualquer");
+        Linha linha = coletaTermosDaLinha("CPY: COPY N1, N4 ;comentario qualquer");
         REQUIRE(linha.rotulo == "CPY");
         REQUIRE(linha.operacao == "COPY");
         REQUIRE(linha.op1 == "N1");
         REQUIRE(linha.op2 == "N4");
     }SECTION("Linha sem rotúlo") {
-        Linha linha = Montador::coletaTermosDaLinha("COPY N1, N4 ;comentario qualquer");
+        Linha linha = coletaTermosDaLinha("COPY N1, N4 ;comentario qualquer");
         REQUIRE(linha.rotulo.empty());
         REQUIRE(linha.operacao == "COPY");
         REQUIRE(linha.op1 == "N1");
         REQUIRE(linha.op2 == "N4");
     }SECTION("Linha sem op2") {
-        Linha linha = Montador::coletaTermosDaLinha("SUB N1");
+        Linha linha = coletaTermosDaLinha("SUB N1");
         REQUIRE(linha.rotulo.empty());
         REQUIRE(linha.operacao == "SUB");
         REQUIRE(linha.op1 == "N1");
