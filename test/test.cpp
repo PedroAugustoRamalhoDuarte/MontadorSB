@@ -28,11 +28,13 @@ TEST_CASE("Pré Processamento") {
 TEST_CASE("Primeira Passagem Erros", "Montador") {
 
     SECTION("Rótulo Duplicado") {
-        Montador montador("../test/files/rotuloDuplicado.asm");
+        auto* arquivoFisico = new ArquivoFisico("../test/files/rotuloDuplicado.asm");
+        Montador montador(arquivoFisico);
         REQUIRE_THROWS(montador.primeiraPassagem());
         // REQUIRE_THROWS_WITH(montador.primeiraPassagem(), "Error -> simbolo redefinido");
     }SECTION("Operação não identificada") {
-        Montador montador("../test/files/operacaoInexistente.asm");
+        auto* arquivoFisico = new ArquivoFisico("../test/files/operacaoInexistente.asm");
+        Montador montador(arquivoFisico);
         REQUIRE_THROWS(montador.primeiraPassagem());
         //REQUIRE_THROWS_WITH(montador.primeiraPassagem(), "Erro -> Operação não identificada");
     }
@@ -40,7 +42,8 @@ TEST_CASE("Primeira Passagem Erros", "Montador") {
 
 TEST_CASE("Primeira Passagem sem Erros", "") {
     SECTION("Exemplo1") {
-        Montador montador("../test/files/exemplo1.asm");
+        auto* arquivoFisico = new ArquivoFisico("../test/files/exemplo1.asm");
+        Montador montador(arquivoFisico);
         montador.primeiraPassagem();
         map<string, int> tabelaDeSimbolos = {
                 {"N1", 13},
@@ -52,7 +55,8 @@ TEST_CASE("Primeira Passagem sem Erros", "") {
         CHECK(montador.tabelaDeSimbolos["N3"] == 15);
         REQUIRE(map_compare(montador.tabelaDeSimbolos, tabelaDeSimbolos));
     }SECTION("Exemplo 2") {
-        Montador montador("../test/files/exemplo2.asm");
+        auto* arquivoFisico = new ArquivoFisico("../test/files/exemplo2.asm");
+        Montador montador(arquivoFisico);
         montador.primeiraPassagem();
 
         CHECK(montador.tabelaDeSimbolos["FRONT"] == 10);
@@ -64,7 +68,8 @@ TEST_CASE("Primeira Passagem sem Erros", "") {
         CHECK(montador.tabelaDeSimbolos["NEW"] == 37);
         CHECK(montador.tabelaDeSimbolos["LIMIT"] == 38);
     }SECTION("Exemplo 3") {
-        Montador montador("../test/files/exemplo3.asm");
+        auto* arquivoFisico = new ArquivoFisico("../test/files/exemplo3.asm");
+        Montador montador(arquivoFisico);
         montador.primeiraPassagem();
 
         CHECK(montador.tabelaDeSimbolos["FAT"] == 4);
@@ -77,7 +82,8 @@ TEST_CASE("Primeira Passagem sem Erros", "") {
 
 TEST_CASE("Segunda Passagem sem erros", "") {
     SECTION("bin") {
-        Montador montador("../test/files/bin.asm");
+        auto* arquivoFisico = new ArquivoFisico("../test/files/bin.asm");
+        Montador montador(arquivoFisico);
         montador.primeiraPassagem();
 
         REQUIRE(montador.segundaPassagem() ==

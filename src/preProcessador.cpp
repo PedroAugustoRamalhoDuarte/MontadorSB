@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// TODO Trocar váriaveis
 class PreProcessador {
     enum SECAO {
         NENHUMA,
@@ -20,6 +21,7 @@ public:
     explicit PreProcessador(const string &nomeArquivo, bool isToWrite) {
         arquivo = new ArquivoFisico(nomeArquivo.c_str());
         if (isToWrite) {
+            // TODO trocar lógica de nome de arquivo
             arquivoPreProcessado = new ArquivoFisico((nomeArquivo + ".out").c_str());
         } else {
             arquivoPreProcessado = new ArquivoEmMemoria;
@@ -28,6 +30,7 @@ public:
     }
 
     // Métodos para controle de seção
+    // ----------------------------------------------------------------
     static bool isSecaoValida(const string &s) {
         return (s == "TEXT" or s == "DATA");
     }
@@ -68,6 +71,7 @@ public:
             setSecao(op1);
         }
     }
+    // ----------------------------------------------------------------
 
     void run() {
         string linha;

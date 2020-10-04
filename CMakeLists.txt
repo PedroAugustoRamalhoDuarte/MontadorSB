@@ -3,5 +3,5 @@ project(MontadorSB)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Main src/preProcessador.cpp)
-add_executable(Trabalhos test/test.cpp)
+add_executable(Main src/main.cpp)
+add_executable(Testes test/test.cpp)

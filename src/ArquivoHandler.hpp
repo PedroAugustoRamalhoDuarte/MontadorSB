@@ -1,3 +1,6 @@
+#ifndef ARQUIVO
+#define ARQUIVO
+
 #include <fstream>
 #include "vector"
 #include "string"
@@ -31,3 +34,5 @@ public:
     void resetFile() override;
     void finishWrite() override;
 };
+
+#endif

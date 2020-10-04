@@ -1,9 +1,8 @@
 #include <map>
 #include <string>
-#include <fstream>
-#include <iostream>
 #include "utils.cpp"
 #include "erro.cpp"
+#include "ArquivoHandler.hpp"
 
 using namespace std;
 
@@ -36,12 +35,10 @@ public:
             {"EQU",     0},
             {"IF",      0}
     };
-    fstream arquivo;
+    ArquivoHandler *arquivo;
 
-    explicit Montador(const char *nomeArquivo) {
-        arquivo.open(nomeArquivo, ios::in);
-        if (!arquivo)
-            throw "ArquivoFisico não encontrado";
+    explicit Montador(ArquivoHandler *arquivoHandler) {
+        this->arquivo = arquivoHandler;
     }
 
     static int tamInstrucao(const string &instrucao) {
@@ -79,10 +76,9 @@ public:
         bool isInsideValid = true;
         int contador_posicao = 0, contador_linha = 1;
         // Enquanto arquivo fonte não chegou ao fim
-        while (arquivo) {
-            if (arquivo.eof()) break;
+        while (!arquivo->hasEnd()) {
             // Obtém uma linha do fonte
-            getline(arquivo, linha);
+            arquivo->getLine(&linha);
 
             // Separa os elementos da linha
             Linha l = coletaTermosDaLinha(linha);
@@ -120,8 +116,7 @@ public:
             contador_linha += 1;
         }
         // Voltar arquivo para o começo
-        arquivo.clear();
-        arquivo.seekg(0, ios::beg);
+        arquivo->resetFile();
     }
 
     string segundaPassagem() {
@@ -129,10 +124,9 @@ public:
         string code;
         int contador_posicao = 0, contador_linha = 1;
         // Enquanto arquivo fonte não chegou ao fim
-        while (arquivo) {
-            if (arquivo.eof()) break;
+        while (!arquivo->hasEnd()) {
             // Obtém uma linha do fonte
-            getline(arquivo, linha);
+            arquivo->getLine(&linha);
 
             // Separa os elementos da linha
             Linha l = coletaTermosDaLinha(linha);
