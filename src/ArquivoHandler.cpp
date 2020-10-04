@@ -42,3 +42,6 @@ void ArquivoFisico::resetFile() {
     arquivo.seekg(0, std::ios::beg);
 }
 
+void ArquivoFisico::finishWrite() {
+    arquivo.close();
+}

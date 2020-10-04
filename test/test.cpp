@@ -12,8 +12,16 @@ bool map_compare(Map const &lhs, Map const &rhs) {
 }
 
 TEST_CASE("Pré Processamento") {
-    PreProcessador preProcessador("../test/files/preProcess.asm", true);
+    std::vector<std::string> arquivoResultado = {
+        "SECTION TEXT",
+        "LOAD SPACE",
+        "SECTION DATA",
+        "N: SPACE"
+    };
+    PreProcessador preProcessador("../test/files/preProcess.asm", false);
     preProcessador.run();
+    auto* arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria*>(preProcessador.arquivoPreProcessado);
+    REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
 }
 
 

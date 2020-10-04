@@ -8,13 +8,13 @@ public:
     virtual void writeLine(std::string linha) = 0;
     virtual bool hasEnd() = 0;
     virtual void resetFile() = 0;
+    virtual void finishWrite() {};
 };
 
 class ArquivoEmMemoria : public ArquivoHandler {
-private:
+public:
     int linhaAtual;
     std::vector<std::string> arquivo;
-public:
     void getLine(std::string *linha) override;
     void writeLine(std::string linha) override;
     bool hasEnd() override;
@@ -27,6 +27,7 @@ public:
     explicit ArquivoFisico(const char *nomeArquivo);
     void getLine(std::string *linha) override;
     void writeLine(std::string linha) override;
-    void resetFile() override;
     bool hasEnd() override;
+    void resetFile() override;
+    void finishWrite() override;
 };

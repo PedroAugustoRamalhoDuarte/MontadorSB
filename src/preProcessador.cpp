@@ -6,22 +6,21 @@
 
 using namespace std;
 
-class PreProcessador{
+class PreProcessador {
     enum SECAO {
         NENHUMA,
         TEXT,
         DATA
     } secao;
-
+public:
     map<string, string> tabelaDeDefinicoes = {};
     ArquivoFisico *arquivo;
     ArquivoHandler *arquivoPreProcessado;
 
-    public:
-    explicit PreProcessador(const char *nomeArquivo, bool isToWrite) {
-        arquivo = new ArquivoFisico(nomeArquivo);
+    explicit PreProcessador(const string &nomeArquivo, bool isToWrite) {
+        arquivo = new ArquivoFisico(nomeArquivo.c_str());
         if (isToWrite) {
-            arquivoPreProcessado = new ArquivoFisico(nomeArquivo);
+            arquivoPreProcessado = new ArquivoFisico((nomeArquivo + ".out").c_str());
         } else {
             arquivoPreProcessado = new ArquivoEmMemoria;
         }
@@ -29,11 +28,11 @@ class PreProcessador{
     }
 
     // Métodos para controle de seção
-    static bool isSecaoValida(const string& s) {
+    static bool isSecaoValida(const string &s) {
         return (s == "TEXT" or s == "DATA");
     }
 
-    void setSecao(const string& s) {
+    void setSecao(const string &s) {
         if (isSecaoValida(s)) {
             if (s == "TEXT") {
                 secao = TEXT;
@@ -46,7 +45,7 @@ class PreProcessador{
         }
     }
 
-    void analisaSecao(const string &operacao, const string& op1, const string &linha, int numLinha) {
+    void analisaSecao(const string &operacao, const string &op1, const string &linha, int numLinha) {
         if (operacao != "SECTION") {
             switch (secao) {
                 case NENHUMA:
@@ -72,7 +71,7 @@ class PreProcessador{
 
     void run() {
         string linha;
-        bool isInsideValid = true;
+        bool printLine = true;
         secao = NENHUMA;
         int contador_linha = 1;
 
@@ -86,19 +85,23 @@ class PreProcessador{
             if (l.operacao == "EQU") {
                 tabelaDeDefinicoes[l.rotulo] = l.op1;
             } else if (l.operacao == "IF") {
+                tabelaDeDefinicoes[l.op1];
                 if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op1)) {
-                    isInsideValid = !(tabelaDeDefinicoes[l.op1] == "0");
+                    printLine = !(tabelaDeDefinicoes[l.op1] == "0");
                 } else {
                     throw MontadorErro("Definição não encontrada", "TIPO", linha, contador_linha);
                 }
             } else {
-                if (isInsideValid) {
-                    arquivoPreProcessado->writeLine(linha);
+                if (printLine) {
+                    arquivoPreProcessado->writeLine(linhaToString(l));
+                } else {
+                    printLine = true;
                 }
             }
 
             contador_linha += 1;
         }
         arquivo->arquivo.close();
+        arquivoPreProcessado->finishWrite();
     }
 };

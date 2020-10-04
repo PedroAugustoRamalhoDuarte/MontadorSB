@@ -56,4 +56,23 @@ Linha coletaTermosDaLinha(const string &linha) {
     return l;
 }
 
+string linhaToString(const Linha& linha){
+    string str;
+    if (!linha.rotulo.empty()){
+        str += linha.rotulo + ": ";
+    }
+    if (!linha.op1.empty()) {
+        str += linha.operacao + ' ';
+    } else {
+        str += linha.operacao;
+    }
+    if (!linha.op1.empty() and !linha.op2.empty()){
+        str += linha.op1 + ", " + linha.op2 ;
+    } else if (!linha.op1.empty()) {
+        str += linha.op1;
+    }
+    return str;
+}
+
+
 #endif
