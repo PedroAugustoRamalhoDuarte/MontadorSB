@@ -16,7 +16,7 @@ public:
 
 class ArquivoEmMemoria : public ArquivoHandler {
 public:
-    int linhaAtual;
+    int linhaAtual = 0;
     std::vector<std::string> arquivo;
     void getLine(std::string *linha) override;
     void writeLine(std::string linha) override;

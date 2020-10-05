@@ -13,14 +13,14 @@ bool map_compare(Map const &lhs, Map const &rhs) {
 
 TEST_CASE("Pré Processamento") {
     std::vector<std::string> arquivoResultado = {
-        "SECTION TEXT",
-        "LOAD SPACE",
-        "SECTION DATA",
-        "N: SPACE"
+            "SECTION TEXT",
+            "LOAD SPACE",
+            "SECTION DATA",
+            "N: SPACE"
     };
     PreProcessador preProcessador("../test/files/preProcess.asm", false);
     preProcessador.run();
-    auto* arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria*>(preProcessador.arquivoPreProcessado);
+    auto *arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria *>(preProcessador.arquivoPreProcessado);
     REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
 }
 
@@ -28,12 +28,12 @@ TEST_CASE("Pré Processamento") {
 TEST_CASE("Primeira Passagem Erros", "Montador") {
 
     SECTION("Rótulo Duplicado") {
-        auto* arquivoFisico = new ArquivoFisico("../test/files/rotuloDuplicado.asm");
+        auto *arquivoFisico = new ArquivoFisico("../test/files/rotuloDuplicado.asm");
         Montador montador(arquivoFisico);
         REQUIRE_THROWS(montador.primeiraPassagem());
         // REQUIRE_THROWS_WITH(montador.primeiraPassagem(), "Error -> simbolo redefinido");
     }SECTION("Operação não identificada") {
-        auto* arquivoFisico = new ArquivoFisico("../test/files/operacaoInexistente.asm");
+        auto *arquivoFisico = new ArquivoFisico("../test/files/operacaoInexistente.asm");
         Montador montador(arquivoFisico);
         REQUIRE_THROWS(montador.primeiraPassagem());
         //REQUIRE_THROWS_WITH(montador.primeiraPassagem(), "Erro -> Operação não identificada");
@@ -42,7 +42,7 @@ TEST_CASE("Primeira Passagem Erros", "Montador") {
 
 TEST_CASE("Primeira Passagem sem Erros", "") {
     SECTION("Exemplo1") {
-        auto* arquivoFisico = new ArquivoFisico("../test/files/exemplo1.asm");
+        auto *arquivoFisico = new ArquivoFisico("../test/files/exemplo1.asm");
         Montador montador(arquivoFisico);
         montador.primeiraPassagem();
         map<string, int> tabelaDeSimbolos = {
@@ -55,7 +55,7 @@ TEST_CASE("Primeira Passagem sem Erros", "") {
         CHECK(montador.tabelaDeSimbolos["N3"] == 15);
         REQUIRE(map_compare(montador.tabelaDeSimbolos, tabelaDeSimbolos));
     }SECTION("Exemplo 2") {
-        auto* arquivoFisico = new ArquivoFisico("../test/files/exemplo2.asm");
+        auto *arquivoFisico = new ArquivoFisico("../test/files/exemplo2.asm");
         Montador montador(arquivoFisico);
         montador.primeiraPassagem();
 
@@ -68,7 +68,7 @@ TEST_CASE("Primeira Passagem sem Erros", "") {
         CHECK(montador.tabelaDeSimbolos["NEW"] == 37);
         CHECK(montador.tabelaDeSimbolos["LIMIT"] == 38);
     }SECTION("Exemplo 3") {
-        auto* arquivoFisico = new ArquivoFisico("../test/files/exemplo3.asm");
+        auto *arquivoFisico = new ArquivoFisico("../test/files/exemplo3.asm");
         Montador montador(arquivoFisico);
         montador.primeiraPassagem();
 
@@ -82,7 +82,7 @@ TEST_CASE("Primeira Passagem sem Erros", "") {
 
 TEST_CASE("Segunda Passagem sem erros", "") {
     SECTION("bin") {
-        auto* arquivoFisico = new ArquivoFisico("../test/files/bin.asm");
+        auto *arquivoFisico = new ArquivoFisico("../test/files/bin.asm");
         Montador montador(arquivoFisico);
         montador.primeiraPassagem();
 
@@ -111,5 +111,17 @@ TEST_CASE("ColetaTermos da Linha", "Montador::colataTermosDaLinha") {
         REQUIRE(linha.operacao == "SUB");
         REQUIRE(linha.op1 == "N1");
         REQUIRE(linha.op2.empty());
+    }
+}
+
+
+TEST_CASE("Main") {
+    SECTION("Sem parametros") {
+        PreProcessador preProcessador("../test/files/bin.asm", false);
+        preProcessador.run();
+        Montador montador(preProcessador.arquivoPreProcessado);
+        montador.primeiraPassagem();
+        REQUIRE(montador.segundaPassagem() ==
+                "12 29 10 29 4 28 11 30 3 28 11 31 10 29 2 31 11 31 13 31 9 30 29 10 29 7 4 14 2 0 0 0 ");
     }
 }
