@@ -1,4 +1,7 @@
-#include "ArquivoHandler.hpp"
+#ifndef ARQUIVO
+#define ARQUIVO
+
+#include "../include/ArquivoHandler.hpp"
 
 void ArquivoEmMemoria::getLine(std::string *linha) {
     if (!this->hasEnd()) {
@@ -45,3 +48,5 @@ void ArquivoFisico::resetFile() {
 void ArquivoFisico::finishWrite() {
     arquivo.close();
 }
+
+#endif

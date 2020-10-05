@@ -1,17 +1,9 @@
 #ifndef UTILS
 #define UTILS
 
-#include <string>
-#include <regex>
+#include "../include/utils.hpp"
 
 using namespace std;
-
-struct Linha {
-    string rotulo;
-    string operacao;
-    string op1;
-    string op2;
-};
 
 bool isInteger(const std::string & s){
     return std::regex_match(s, std::regex("-?[0-9]{0,10}"));

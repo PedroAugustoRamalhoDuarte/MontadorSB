@@ -1,6 +1,6 @@
 #include <iostream>
-#include "montador.cpp"
-#include "preProcessador.cpp"
+#include "../include/montador.hpp"
+#include "../include/preProcessador.hpp"
 
 int main(int argc, char **argv) {
     std::cout << argc << std::endl;

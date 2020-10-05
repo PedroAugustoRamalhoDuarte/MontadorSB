@@ -1,8 +1,8 @@
 #define CATCH_CONFIG_MAIN
 
 #include "catch.hpp"
-#include "../src/montador.cpp"
-#include "../src/preProcessador.cpp"
+#include "../include/montador.hpp"
+#include "../include/preProcessador.hpp"
 
 template<typename Map>
 bool map_compare(Map const &lhs, Map const &rhs) {

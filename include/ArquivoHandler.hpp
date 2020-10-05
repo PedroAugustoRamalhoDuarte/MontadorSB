@@ -1,5 +1,5 @@
-#ifndef ARQUIVO
-#define ARQUIVO
+#ifndef ARQUIVO_H
+#define ARQUIVO_H
 
 #include <fstream>
 #include "vector"
