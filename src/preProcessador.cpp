@@ -77,13 +77,18 @@ void PreProcessador::run() {
         if (l.operacao == "EQU") {
             tabelaDeDefinicoes[l.rotulo] = l.op1;
         } else if (l.operacao == "IF") {
-            tabelaDeDefinicoes[l.op1];
             if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op1)) {
                 printLine = !(tabelaDeDefinicoes[l.op1] == "0");
             } else {
                 throw MontadorErro("Definição não encontrada", "TIPO", linha, contador_linha);
             }
         } else {
+            if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op1)) {
+                l.op1 = tabelaDeDefinicoes[l.op1];
+            }
+            if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op2)) {
+                l.op2 = tabelaDeDefinicoes[l.op2];
+            }
             if (printLine) {
                 arquivoPreProcessado->writeLine(linhaToString(l));
             } else {

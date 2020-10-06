@@ -12,16 +12,30 @@ bool map_compare(Map const &lhs, Map const &rhs) {
 }
 
 TEST_CASE("Pré Processamento") {
-    std::vector<std::string> arquivoResultado = {
-            "SECTION TEXT",
-            "LOAD SPACE",
-            "SECTION DATA",
-            "N: SPACE"
-    };
-    PreProcessador preProcessador("../test/files/preProcess.asm", false);
-    preProcessador.run();
-    auto *arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria *>(preProcessador.arquivoPreProcessado);
-    REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
+    SECTION("IF e EQU") {
+        std::vector<std::string> arquivoResultado = {
+                "SECTION TEXT",
+                "LOAD SPACE",
+                "SECTION DATA",
+                "N: SPACE"
+        };
+        PreProcessador preProcessador("../test/files/preProcess.asm", false);
+        preProcessador.run();
+        auto *arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria *>(preProcessador.arquivoPreProcessado);
+        REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
+    }SECTION("EQU e CONST") {
+        std::vector<std::string> arquivoResultado = {
+                "SECTION TEXT",
+                "STORE N",
+                "SECTION DATA",
+                "N: CONST 10",
+        };
+        PreProcessador preProcessador("../test/files/preProcess1.asm", false);
+        preProcessador.run();
+        auto *arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria *>(preProcessador.arquivoPreProcessado);
+        REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
+    }
+
 }
 
 
