@@ -34,6 +34,17 @@ TEST_CASE("Pré Processamento") {
         preProcessador.run();
         auto *arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria *>(preProcessador.arquivoPreProcessado);
         REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
+    }SECTION("MULTI LINE ROTULO") {
+        std::vector<std::string> arquivoResultado = {
+                "SECTION TEXT",
+                "L1: STORE N",
+                "SECTION DATA",
+                "N: CONST 10",
+        };
+        PreProcessador preProcessador("../test/files/preProcess2.asm", false);
+        preProcessador.run();
+        auto *arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria *>(preProcessador.arquivoPreProcessado);
+        REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
     }
 
 }

@@ -9,7 +9,6 @@
 
 using namespace std;
 
-// TODO Trocar váriaveis
 class PreProcessador {
     enum SECAO {
         NENHUMA,

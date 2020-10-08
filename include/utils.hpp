@@ -17,6 +17,8 @@ bool isInteger(const std::string & s);
 
 string toUpperCase(string str);
 
+bool somenteRotulo(const Linha& linha);
+
 Linha coletaTermosDaLinha(const string &linha);
 
 string linhaToString(const Linha& linha);

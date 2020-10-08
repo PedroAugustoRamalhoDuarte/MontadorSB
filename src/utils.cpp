@@ -5,17 +5,17 @@
 
 using namespace std;
 
-bool isInteger(const std::string & s){
+bool isInteger(const std::string &s) {
     return std::regex_match(s, std::regex("-?[0-9]{0,10}"));
 }
 
 string toUpperCase(string str) {
-    std::transform(str.begin(), str.end(),str.begin(), ::toupper);
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
     return str;
 }
 
-string retiraComentarios(string str) {
-    return str;
+bool somenteRotulo(const Linha& linha) {
+    return !linha.rotulo.empty() and linha.operacao.empty() and linha.op1.empty();
 }
 
 Linha coletaTermosDaLinha(const string &linha) {
@@ -48,9 +48,9 @@ Linha coletaTermosDaLinha(const string &linha) {
     return l;
 }
 
-string linhaToString(const Linha& linha){
+string linhaToString(const Linha &linha) {
     string str;
-    if (!linha.rotulo.empty()){
+    if (!linha.rotulo.empty()) {
         str += linha.rotulo + ": ";
     }
     if (!linha.op1.empty()) {
@@ -58,8 +58,8 @@ string linhaToString(const Linha& linha){
     } else {
         str += linha.operacao;
     }
-    if (!linha.op1.empty() and !linha.op2.empty()){
-        str += linha.op1 + ", " + linha.op2 ;
+    if (!linha.op1.empty() and !linha.op2.empty()) {
+        str += linha.op1 + ", " + linha.op2;
     } else if (!linha.op1.empty()) {
         str += linha.op1;
     }
