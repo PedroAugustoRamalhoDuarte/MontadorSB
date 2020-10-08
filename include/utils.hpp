@@ -3,6 +3,7 @@
 
 #include <string>
 #include <regex>
+#include "ArquivoHandler.hpp"
 
 using namespace std;
 
@@ -19,8 +20,12 @@ string toUpperCase(string str);
 
 bool somenteRotulo(const Linha& linha);
 
+string trocarTipo(string nome, const string& terminacao);
+
 Linha coletaTermosDaLinha(const string &linha);
 
 string linhaToString(const Linha& linha);
+
+void gerarArquivoObjeto(string codigo, string filename);
 
 #endif

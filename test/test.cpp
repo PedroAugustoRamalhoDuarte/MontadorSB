@@ -11,6 +11,25 @@ bool map_compare(Map const &lhs, Map const &rhs) {
                          rhs.begin());
 }
 
+bool compareFiles(const std::string& filename1, const std::string& filename2)
+{
+    std::ifstream file1(filename1, std::ifstream::ate | std::ifstream::binary); //open file at the end
+    std::ifstream file2(filename2, std::ifstream::ate | std::ifstream::binary); //open file at the end
+    const std::ifstream::pos_type fileSize = file1.tellg();
+
+    if (fileSize != file2.tellg()) {
+        return false; //different file size
+    }
+
+    file1.seekg(0); //rewind
+    file2.seekg(0); //rewind
+
+    std::istreambuf_iterator<char> begin1(file1);
+    std::istreambuf_iterator<char> begin2(file2);
+
+    return std::equal(begin1,std::istreambuf_iterator<char>(),begin2); //Second argument is end-of-range iterator
+}
+
 TEST_CASE("Pré Processamento") {
     SECTION("IF e EQU") {
         std::vector<std::string> arquivoResultado = {
@@ -149,4 +168,17 @@ TEST_CASE("Main") {
         REQUIRE(montador.segundaPassagem() ==
                 "12 29 10 29 4 28 11 30 3 28 11 31 10 29 2 31 11 31 13 31 9 30 29 10 29 7 4 14 2 0 0 0 ");
     }
+    SECTION("With -p") {
+        PreProcessador preProcessador("../test/files/preProcess1.asm", true);
+        preProcessador.run();
+        // REQUIRE(compareFiles("../test/files/preProcess1.pre", "../test/files/result/preProcess1.pre"));
+    }
+    SECTION("With -c") {
+        auto *arquivoFisico = new ArquivoFisico("../test/files/bin.asm");
+        Montador montador(arquivoFisico);
+        montador.primeiraPassagem();
+        REQUIRE(montador.segundaPassagem() ==
+                "12 29 10 29 4 28 11 30 3 28 11 31 10 29 2 31 11 31 13 31 9 30 29 10 29 7 4 14 2 0 0 0 ");
+    }
+
 }

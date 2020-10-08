@@ -1,17 +1,17 @@
 #include <iostream>
 #include "../include/montador.hpp"
 #include "../include/preProcessador.hpp"
+#include "../include/utils.hpp"
 
 int main(int argc, char **argv) {
-    std::cout << argc << std::endl;
     if (argc == 2) {
         // ex ./montador myprogram.asm
-        std::cout << "Montado programa: " << argv[1] << endl;
+        std::cout << "Montando programa: " << argv[1] << endl;
         PreProcessador preProcessador(argv[1], false);
         preProcessador.run();
         Montador montador(preProcessador.arquivoPreProcessado);
         montador.primeiraPassagem();
-        std::cout << montador.segundaPassagem() << endl;
+        gerarArquivoObjeto(montador.segundaPassagem(), argv[1]);
     } else if (argc == 3) {
         if (strcmp(argv[1], "-p") == 0) {
             std::cout << "Pré-processando: " << argv[2] << endl;
@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
             auto *arquivoFisico = new ArquivoFisico(argv[2]);
             Montador montador(arquivoFisico);
             montador.primeiraPassagem();
-            std::cout << montador.segundaPassagem() << endl;
+            gerarArquivoObjeto(montador.segundaPassagem(), argv[2]);
         } else {
             throw invalid_argument("Argumento inválido, utilize -p, -c ou nada");
         }

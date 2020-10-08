@@ -9,8 +9,7 @@ using namespace std;
 PreProcessador::PreProcessador(const string &nomeArquivo, bool isToWrite) {
     arquivo = new ArquivoFisico(nomeArquivo.c_str());
     if (isToWrite) {
-        // TODO trocar lógica de nome de arquivo
-        arquivoPreProcessado = new ArquivoFisico((nomeArquivo + ".out").c_str());
+        arquivoPreProcessado = new ArquivoFisico(trocarTipo(nomeArquivo, ".pre").c_str(), true);
     } else {
         arquivoPreProcessado = new ArquivoEmMemoria;
     }

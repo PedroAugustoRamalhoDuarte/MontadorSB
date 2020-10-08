@@ -21,7 +21,6 @@ int Montador::tamInstrucao(const string &instrucao) {
     }
 };
 
-// TODO testar essa funcao
 int Montador::isOperacaoValida(const Linha &linha) {
     if (linha.operacao == "COPY") {
         return !linha.op1.empty() and !linha.op2.empty();

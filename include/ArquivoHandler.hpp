@@ -27,7 +27,7 @@ public:
 class ArquivoFisico : public ArquivoHandler {
 public:
     std::fstream arquivo;
-    explicit ArquivoFisico(const char *nomeArquivo);
+    explicit ArquivoFisico(const char *nomeArquivo, bool modoDeEscrita = false);
     void getLine(std::string *linha) override;
     void writeLine(std::string linha) override;
     bool hasEnd() override;

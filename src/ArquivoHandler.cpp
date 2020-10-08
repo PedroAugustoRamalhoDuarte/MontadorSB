@@ -22,8 +22,12 @@ void ArquivoEmMemoria::resetFile() {
     linhaAtual = 0;
 }
 
-ArquivoFisico::ArquivoFisico(const char *nomeArquivo) {
-    arquivo.open(nomeArquivo);
+ArquivoFisico::ArquivoFisico(const char *nomeArquivo, bool modoDeEscrita) {
+    if (modoDeEscrita) {
+        arquivo.open(nomeArquivo, std::ios::out | std::ios::trunc);
+    } else {
+        arquivo.open(nomeArquivo);
+    }
     if (!arquivo)
         throw "ArquivoFisico não encontrado";
 }

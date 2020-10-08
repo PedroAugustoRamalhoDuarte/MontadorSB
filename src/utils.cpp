@@ -14,9 +14,18 @@ string toUpperCase(string str) {
     return str;
 }
 
-bool somenteRotulo(const Linha& linha) {
+bool somenteRotulo(const Linha &linha) {
     return !linha.rotulo.empty() and linha.operacao.empty() and linha.op1.empty();
 }
+
+string trocarTipo(string nome, const string &terminacao) {
+    if (std::string::npos == nome.find('.')) {
+        return nome + '.' + terminacao;
+    } else {
+        return nome.replace(nome.find_last_of('.'), nome.length(), terminacao);
+    }
+}
+
 
 Linha coletaTermosDaLinha(const string &linha) {
     string elementos[4];
@@ -66,5 +75,10 @@ string linhaToString(const Linha &linha) {
     return str;
 }
 
+void gerarArquivoObjeto(string codigo, string filename) {
+    auto *arquivoFisico = new ArquivoFisico(trocarTipo(filename, ".obj").c_str(), true);
+    arquivoFisico->writeLine(codigo);
+    arquivoFisico->finishWrite();
+}
 
 #endif
