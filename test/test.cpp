@@ -11,62 +11,6 @@ bool map_compare(Map const &lhs, Map const &rhs) {
                          rhs.begin());
 }
 
-bool compareFiles(const std::string& filename1, const std::string& filename2)
-{
-    std::ifstream file1(filename1, std::ifstream::ate | std::ifstream::binary); //open file at the end
-    std::ifstream file2(filename2, std::ifstream::ate | std::ifstream::binary); //open file at the end
-    const std::ifstream::pos_type fileSize = file1.tellg();
-
-    if (fileSize != file2.tellg()) {
-        return false; //different file size
-    }
-
-    file1.seekg(0); //rewind
-    file2.seekg(0); //rewind
-
-    std::istreambuf_iterator<char> begin1(file1);
-    std::istreambuf_iterator<char> begin2(file2);
-
-    return std::equal(begin1,std::istreambuf_iterator<char>(),begin2); //Second argument is end-of-range iterator
-}
-
-TEST_CASE("Pré Processamento") {
-    SECTION("IF e EQU") {
-        std::vector<std::string> arquivoResultado = {
-                "SECTION TEXT",
-                "LOAD SPACE",
-                "SECTION DATA",
-                "N: SPACE"
-        };
-        PreProcessador preProcessador("../test/files/preProcess.asm", false);
-        preProcessador.run();
-        auto *arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria *>(preProcessador.arquivoPreProcessado);
-        REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
-    }SECTION("EQU e CONST") {
-        std::vector<std::string> arquivoResultado = {
-                "SECTION TEXT",
-                "STORE N",
-                "SECTION DATA",
-                "N: CONST 10",
-        };
-        PreProcessador preProcessador("../test/files/preProcess1.asm", false);
-        preProcessador.run();
-        auto *arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria *>(preProcessador.arquivoPreProcessado);
-        REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
-    }SECTION("MULTI LINE ROTULO") {
-        std::vector<std::string> arquivoResultado = {
-                "SECTION TEXT",
-                "L1: STORE N",
-                "SECTION DATA",
-                "N: CONST 10",
-        };
-        PreProcessador preProcessador("../test/files/preProcess2.asm", false);
-        preProcessador.run();
-        auto *arquivoEmMemoria = dynamic_cast<ArquivoEmMemoria *>(preProcessador.arquivoPreProcessado);
-        REQUIRE(arquivoEmMemoria->arquivo == arquivoResultado);
-    }
-
-}
 
 
 TEST_CASE("Primeira Passagem Erros", "Montador") {

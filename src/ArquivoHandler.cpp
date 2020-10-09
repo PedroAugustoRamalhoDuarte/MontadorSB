@@ -29,7 +29,7 @@ ArquivoFisico::ArquivoFisico(const char *nomeArquivo, bool modoDeEscrita) {
         arquivo.open(nomeArquivo);
     }
     if (!arquivo)
-        throw "ArquivoFisico não encontrado";
+        throw std::invalid_argument("ArquivoFisico não encontrado");
 }
 
 void ArquivoFisico::getLine(std::string *linha) {

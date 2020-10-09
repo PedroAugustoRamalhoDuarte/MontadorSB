@@ -40,28 +40,24 @@ int Montador::isOperacaoValida(const Linha &linha) {
 
 void Montador::primeiraPassagem() {
     string linha;
-    bool isInsideValid = true;
-    int contador_posicao = 0, contador_linha = 1;
-    // Enquanto arquivo fonte não chegou ao fim
+    int contadorPosicao = 0, contadorLinha = 1;
     while (!arquivo->hasEnd()) {
-        // Obtém uma linha do fonte
         arquivo->getLine(&linha);
 
-        // Separa os elementos da linha
         Linha l = coletaTermosDaLinha(linha);
 
         // Se existe rótulo
         if (!l.rotulo.empty()) {
             if (tabelaDeSimbolos.end() != tabelaDeSimbolos.find(l.rotulo)) {
                 // Se já existe o simbolo na tabela de simbolos
-                throw MontadorErro("Símbolo Redefinido", "TIPO", linha, contador_linha);
+                throw MontadorErro("Símbolo Redefinido", "TIPO", linha, contadorLinha);
             } else {
                 // Se não Insere rótulo e contador_posição na TS
                 if (l.operacao == "EQU") {
                     // Na Diretiva EQU guardar o valor da operação
                     tabelaDeSimbolos[l.rotulo] = stoi(l.op1);
                 } else {
-                    tabelaDeSimbolos[l.rotulo] = contador_posicao;
+                    tabelaDeSimbolos[l.rotulo] = contadorPosicao;
                 }
 
             }
@@ -70,17 +66,17 @@ void Montador::primeiraPassagem() {
 
         // Procura operação na tabela de instruções
         if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
-            contador_posicao += tamInstrucao(l.operacao);
+            contadorPosicao += tamInstrucao(l.operacao);
         } else {
             // Procura operação na tabela de diretivas
             if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
-                contador_posicao += tamInstrucao(l.operacao);
+                contadorPosicao += tamInstrucao(l.operacao);
             } else {
-                throw MontadorErro("Operação não identificada", "TIPO", linha, contador_linha);
+                throw MontadorErro("Operação não identificada", "TIPO", linha, contadorLinha);
             }
         }
 
-        contador_linha += 1;
+        contadorLinha += 1;
     }
     // Voltar arquivo para o começo
     arquivo->resetFile();
@@ -89,25 +85,22 @@ void Montador::primeiraPassagem() {
 string Montador::segundaPassagem() {
     string linha;
     string code;
-    int contador_posicao = 0, contador_linha = 1;
-    // Enquanto arquivo fonte não chegou ao fim
+    int contadorPosicao = 0, contadorLinha = 1;
     while (!arquivo->hasEnd()) {
-        // Obtém uma linha do fonte
         arquivo->getLine(&linha);
 
-        // Separa os elementos da linha
         Linha l = coletaTermosDaLinha(linha);
 
         // Para cada operando
         if (l.operacao != "CONST" and l.operacao != "SECTION") {
             if ((tabelaDeSimbolos.end() == tabelaDeSimbolos.find(l.op1) and !l.op1.empty()) or (
                     tabelaDeSimbolos.end() == tabelaDeSimbolos.find(l.op2) and !l.op2.empty())) {
-                throw MontadorErro("Símobolo indefinido", "TIPO", linha, contador_linha);
+                throw MontadorErro("Símobolo indefinido", "TIPO", linha, contadorLinha);
             }
         }
         // Procura operação na tabela de instruções
         if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
-            contador_posicao += tamInstrucao(l.operacao);
+            contadorPosicao += tamInstrucao(l.operacao);
             if (isOperacaoValida(l)) {
                 code += to_string(tabelaDeIntrucoes[l.operacao]) + ' ';
                 if (!l.op1.empty()) {
@@ -117,7 +110,7 @@ string Montador::segundaPassagem() {
                     code += to_string(tabelaDeSimbolos[l.op2]) + ' ';
                 }
             } else {
-                throw MontadorErro("Operando inválido", "TIPO", linha, contador_linha);
+                throw MontadorErro("Operando inválido", "TIPO", linha, contadorLinha);
             }
 
         } else {
@@ -127,13 +120,11 @@ string Montador::segundaPassagem() {
                 } else if (l.operacao == "SPACE") {
                     code += "0 ";
                 }
-                // Chama subrotina que executa a diretiva
-                // Contador_posição = valor retornado pela subrotina
             } else {
-                throw MontadorErro("Operando não identificada", "TIPO", linha, contador_linha);
+                throw MontadorErro("Operando não identificada", "TIPO", linha, contadorLinha);
             }
         }
-        contador_linha += 1;
+        contadorLinha += 1;
     }
     return code;
 }
