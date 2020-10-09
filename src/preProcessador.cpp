@@ -30,8 +30,7 @@ void PreProcessador::setSecao(const string &s) {
             secao = DATA;
         }
     } else {
-        // TODO MONTAR ESSE ERRO
-        throw MontadorErro("Seção Inválida", "TIPO", "linha", 0);
+        throw MontadorException(MontadorException::SECAO_INVALIDA);
     }
 }
 
@@ -40,17 +39,17 @@ void PreProcessador::analisaSecao(const string &operacao, const string &op1, con
         switch (secao) {
             case NENHUMA:
                 if (operacao != "EQU") {
-                    throw MontadorErro("Operação fora da seção adequada", "TIPO", linha, numLinha);
+                    throw MontadorException(MontadorException::SECAO_ERRADA);
                 }
                 break;
             case TEXT:
                 if (operacao == "EQU" or operacao == "SPACE" or operacao == "CONST") {
-                    throw MontadorErro("Operação fora da seção adequada", "TIPO", linha, numLinha);
+                    throw MontadorException(MontadorException::SECAO_ERRADA);
                 };
                 break;
             case DATA:
                 if (operacao != "SPACE" and operacao != "CONST") {
-                    throw MontadorErro("Operação fora da seção adequada", "TIPO", linha, numLinha);
+                    throw MontadorException(MontadorException::SECAO_ERRADA);
                 };
                 break;
         }
@@ -80,7 +79,7 @@ void PreProcessador::run() {
                 if (l.rotulo.empty()) {
                     l.rotulo = ultimoRotulo;
                 } else {
-                    throw MontadorErro("Dois rótulos na mesma linha", "TIPO", linha, contadorLinha);
+                    throw MontadorException(MontadorException::DOIS_ROTULOS);
                 }
             }
             ultimoRotulo = "";
@@ -94,7 +93,7 @@ void PreProcessador::run() {
             if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op1)) {
                 printLine = !(tabelaDeDefinicoes[l.op1] == "0");
             } else {
-                throw MontadorErro("Definição não encontrada", "TIPO", linha, contadorLinha);
+                throw MontadorException(MontadorException::ROTULO_AUSENTE);
             }
         } else {
             if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op1)) {

@@ -4,6 +4,7 @@
 #include <string>
 #include <regex>
 #include "ArquivoHandler.hpp"
+#include "error.hpp"
 
 using namespace std;
 
@@ -14,17 +15,19 @@ struct Linha {
     string op2;
 };
 
-bool isInteger(const std::string & s);
+bool isInteger(const std::string &s);
+
+bool isVariavelValida(const string &variavel);
 
 string toUpperCase(string str);
 
-bool somenteRotulo(const Linha& linha);
+bool somenteRotulo(const Linha &linha);
 
-string trocarTipo(string nome, const string& terminacao);
+string trocarTipo(string nome, const string &terminacao);
 
 Linha coletaTermosDaLinha(const string &linha);
 
-string linhaToString(const Linha& linha);
+string linhaToString(const Linha &linha);
 
 void gerarArquivoObjeto(string codigo, string filename);
 

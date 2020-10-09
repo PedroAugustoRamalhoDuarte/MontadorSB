@@ -9,6 +9,10 @@ bool isInteger(const std::string &s) {
     return std::regex_match(s, std::regex("-?[0-9]{0,10}"));
 }
 
+bool isVariavelValida(const string &variavel) {
+    return variavel.size() <= 50 && regex_match(variavel, regex("^[a-zA-Z_$][a-zA-Z_$0-9]*"));
+}
+
 string toUpperCase(string str) {
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
     return str;
@@ -25,7 +29,6 @@ string trocarTipo(string nome, const string &terminacao) {
         return nome.replace(nome.find_last_of('.'), nome.length(), terminacao);
     }
 }
-
 
 Linha coletaTermosDaLinha(const string &linha) {
     string elementos[4];
@@ -49,6 +52,16 @@ Linha coletaTermosDaLinha(const string &linha) {
             elementos[cont] += ch;
         }
     }
+
+    for (auto &elemento : elementos) {
+        if (elementos[1] != "CONST" and elementos[1] != "EQU") {
+            // Verifica se o tempo
+            if (!elemento.empty() and !isVariavelValida(elemento)) {
+                throw MontadorException(MontadorException::TOKEN_INVALIDO);
+            }
+        }
+    }
+
     // Transformar todos os elementos em caixa alta #0001
     Linha l = {toUpperCase(elementos[0]),
                toUpperCase(elementos[1]),

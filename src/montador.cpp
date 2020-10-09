@@ -40,43 +40,52 @@ int Montador::isOperacaoValida(const Linha &linha) {
 
 void Montador::primeiraPassagem() {
     string linha;
-    int contadorPosicao = 0, contadorLinha = 1;
+    int contadorPosicao = 0, contadorLinha = 0;
     while (!arquivo->hasEnd()) {
-        arquivo->getLine(&linha);
+        try {
+            arquivo->getLine(&linha);
+            contadorLinha += 1;
+            Linha l = coletaTermosDaLinha(linha);
 
-        Linha l = coletaTermosDaLinha(linha);
-
-        // Se existe rótulo
-        if (!l.rotulo.empty()) {
-            if (tabelaDeSimbolos.end() != tabelaDeSimbolos.find(l.rotulo)) {
-                // Se já existe o simbolo na tabela de simbolos
-                throw MontadorErro("Símbolo Redefinido", "TIPO", linha, contadorLinha);
-            } else {
-                // Se não Insere rótulo e contador_posição na TS
-                if (l.operacao == "EQU") {
-                    // Na Diretiva EQU guardar o valor da operação
-                    tabelaDeSimbolos[l.rotulo] = stoi(l.op1);
-                } else {
-                    tabelaDeSimbolos[l.rotulo] = contadorPosicao;
-                }
-
+            if (contadorLinha == 1 and (l.operacao != "SECTION" or l.op1 != "TEXT")) {
+                throw MontadorException(MontadorException::TEXT_FALTANTE);
             }
 
-        }
+            // Se existe rótulo
+            if (!l.rotulo.empty()) {
+                if (tabelaDeSimbolos.end() != tabelaDeSimbolos.find(l.rotulo)) {
+                    // Se já existe o simbolo na tabela de simbolos
+                    throw MontadorException(MontadorException::ROTULO_REPETIDO);
+                } else {
+                    // Se não Insere rótulo e contador_posição na TS
+                    if (l.operacao == "EQU") {
+                        // Na Diretiva EQU guardar o valor da operação
+                        tabelaDeSimbolos[l.rotulo] = stoi(l.op1);
+                    } else {
+                        tabelaDeSimbolos[l.rotulo] = contadorPosicao;
+                    }
+                }
+            }
 
-        // Procura operação na tabela de instruções
-        if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
-            contadorPosicao += tamInstrucao(l.operacao);
-        } else {
-            // Procura operação na tabela de diretivas
-            if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
+            // Procura operação na tabela de instruções
+            if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
                 contadorPosicao += tamInstrucao(l.operacao);
             } else {
-                throw MontadorErro("Operação não identificada", "TIPO", linha, contadorLinha);
+                // Procura operação na tabela de diretivas
+                if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
+                    contadorPosicao += tamInstrucao(l.operacao);
+                } else {
+                    throw MontadorException(MontadorException::OPERACAO_INVALIDA);
+                }
             }
+        } catch (MontadorException &e) {
+            errors.adicionaError(e.error, linha, contadorLinha);
+            continue;
         }
+    }
 
-        contadorLinha += 1;
+    if (errors.contemErrors()) {
+        throw PassagemException("Primeira Passagem", &errors);
     }
     // Voltar arquivo para o começo
     arquivo->resetFile();
@@ -87,45 +96,54 @@ string Montador::segundaPassagem() {
     string code;
     int contadorPosicao = 0, contadorLinha = 1;
     while (!arquivo->hasEnd()) {
-        arquivo->getLine(&linha);
+        try {
+            arquivo->getLine(&linha);
+            contadorLinha += 1;
+            Linha l = coletaTermosDaLinha(linha);
 
-        Linha l = coletaTermosDaLinha(linha);
-
-        // Para cada operando
-        if (l.operacao != "CONST" and l.operacao != "SECTION") {
-            if ((tabelaDeSimbolos.end() == tabelaDeSimbolos.find(l.op1) and !l.op1.empty()) or (
-                    tabelaDeSimbolos.end() == tabelaDeSimbolos.find(l.op2) and !l.op2.empty())) {
-                throw MontadorErro("Símobolo indefinido", "TIPO", linha, contadorLinha);
+            // Para cada operando
+            if (l.operacao != "CONST" and l.operacao != "SECTION") {
+                if ((tabelaDeSimbolos.end() == tabelaDeSimbolos.find(l.op1) and !l.op1.empty()) or (
+                        tabelaDeSimbolos.end() == tabelaDeSimbolos.find(l.op2) and !l.op2.empty())) {
+                    throw MontadorException(MontadorException::ROTULO_AUSENTE);
+                }
             }
-        }
-        // Procura operação na tabela de instruções
-        if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
-            contadorPosicao += tamInstrucao(l.operacao);
-            if (isOperacaoValida(l)) {
-                code += to_string(tabelaDeIntrucoes[l.operacao]) + ' ';
-                if (!l.op1.empty()) {
-                    code += to_string(tabelaDeSimbolos[l.op1]) + ' ';
+            // Procura operação na tabela de instruções
+            if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
+                contadorPosicao += tamInstrucao(l.operacao);
+                if (isOperacaoValida(l)) {
+                    code += to_string(tabelaDeIntrucoes[l.operacao]) + ' ';
+                    if (!l.op1.empty()) {
+                        code += to_string(tabelaDeSimbolos[l.op1]) + ' ';
+                    }
+                    if (!l.op2.empty()) {
+                        code += to_string(tabelaDeSimbolos[l.op2]) + ' ';
+                    }
+                } else {
+                    throw MontadorException(MontadorException::OPERANDO_INVALIDO);
                 }
-                if (!l.op2.empty()) {
-                    code += to_string(tabelaDeSimbolos[l.op2]) + ' ';
-                }
+
             } else {
-                throw MontadorErro("Operando inválido", "TIPO", linha, contadorLinha);
-            }
-
-        } else {
-            if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
-                if (l.operacao == "CONST") {
-                    code += l.op1 + ' ';
-                } else if (l.operacao == "SPACE") {
-                    code += "0 ";
+                if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
+                    if (l.operacao == "CONST") {
+                        code += l.op1 + ' ';
+                    } else if (l.operacao == "SPACE") {
+                        code += "0 ";
+                    }
+                } else {
+                    throw MontadorException(MontadorException::OPERACAO_INVALIDA);
                 }
-            } else {
-                throw MontadorErro("Operando não identificada", "TIPO", linha, contadorLinha);
             }
+        } catch (MontadorException &e) {
+            errors.adicionaError(e.error, linha, contadorLinha);
+            continue;
         }
-        contadorLinha += 1;
     }
+
+    if (errors.contemErrors()) {
+        throw PassagemException("Segunda Passagem", &errors);
+    }
+
     return code;
 }
 

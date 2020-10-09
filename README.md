@@ -25,7 +25,7 @@ seria equivalente a linha seguinte) (#006)
 - diretivas ou instruções na seção errada OK;
 - instruções com a quantidade de operando errado; OK
 - instruções com o tipo de operando inválido;
-- tokens inválidos;
+- tokens inválidos; OK
 - dois rótulos na mesma linha;
 - seção TEXT faltante;
 - seção inválida; OK

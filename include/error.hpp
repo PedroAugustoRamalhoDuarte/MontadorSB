@@ -2,25 +2,65 @@
 #define MONTADOR_ERROR_H
 
 #include <string>
+#include <vector>
+#include <iostream>
 
 using namespace std;
 
-class MontadorErro : public std::exception {
+class MontadorException : public std::exception {
 public:
-    string menssagem;
+    enum ERROR_CODE {
+        ROTULO_AUSENTE,
+        ROTULO_REPETIDO,
+        OPERACAO_INVALIDA,
+        SECAO_ERRADA,
+        QUANTIDADE_OPERANDO,
+        OPERANDO_INVALIDO,
+        TOKEN_INVALIDO,
+        DOIS_ROTULOS,
+        TEXT_FALTANTE,
+        SECAO_INVALIDA,
+    } error;
 
-    MontadorErro(const string& msg, const string& tipo, const string& linha, int numLinha): std::exception() {
-        this->menssagem.append("Erro(");
-        this->menssagem.append(to_string(numLinha));
-        this->menssagem.append("): ");
-        this->menssagem.append(linha);
-        this->menssagem.append("\n");
-        this->menssagem.append(tipo);
-        this->menssagem.append(": ");
-        this->menssagem.append(msg);
+    MontadorException(ERROR_CODE error) : std::exception() {
+        this->error = error;
     }
 
-    const char * what() const noexcept override;
+    const char *what() const noexcept override;
 };
+
+struct MontadorError {
+    MontadorException::ERROR_CODE code;
+    string linha;
+    int numLinha;
+};
+
+class MontadorErrors {
+    vector<MontadorError> errors;
+public:
+    void adicionaError(MontadorException::ERROR_CODE error, string linha, int numLinha);
+
+    static string mensagemError(MontadorException::ERROR_CODE);
+
+    static string errorTipo(MontadorException::ERROR_CODE);
+m
+    bool contemErrors();
+
+    void printErrors();
+};
+
+class PassagemException : public std::exception {
+    string passagem;
+public:
+    MontadorErrors *errors;
+
+    PassagemException(string passagem, MontadorErrors* errors) : std::exception() {
+        this->passagem = passagem;
+        this->errors = errors;
+    }
+
+    const char *what() const noexcept override;
+};
+
 
 #endif

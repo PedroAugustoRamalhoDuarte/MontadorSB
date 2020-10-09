@@ -1,12 +1,70 @@
 #ifndef MONTADOR_ERROR
 #define MONTADOR_ERROR
 
+
 #include "../include/error.hpp"
 
 using namespace std;
 
-const char *MontadorErro::what() const noexcept {
-    return this->menssagem.c_str();
+const char *MontadorException::what() const noexcept {
+    return (const char *) this->error;
 }
+
+void MontadorErrors::adicionaError(MontadorException::ERROR_CODE error, string linha, int numLinha) {
+    errors.push_back((MontadorError) {error, linha, numLinha});
+}
+
+string MontadorErrors::mensagemError(MontadorException::ERROR_CODE error) {
+    switch (error) {
+        case MontadorException::ROTULO_AUSENTE:
+            return "Declaração ou Rótulo Ausente";
+        case MontadorException::ROTULO_REPETIDO:
+            return "Declarao ou Rótulo Repetido";
+        case MontadorException::OPERACAO_INVALIDA:
+            return "Diretiva ou Instrução inválida";
+        case MontadorException::SECAO_ERRADA:
+            return "Diretivas ou instruções na seção errada";
+        case MontadorException::QUANTIDADE_OPERANDO:
+            return "Instruções com a quantidade de operando errado";
+        case MontadorException::OPERANDO_INVALIDO:
+            return "Instruções com o tipo de operando inválido";
+        case MontadorException::TOKEN_INVALIDO:
+            return "Tokens inválidos";
+        case MontadorException::DOIS_ROTULOS:
+            return "Dois rótulos na mesma linha";
+        case MontadorException::TEXT_FALTANTE:
+            return "Seção TEXT faltante";
+        case MontadorException::SECAO_INVALIDA:
+            return "Seção inválida";
+    }
+}
+
+string MontadorErrors::errorTipo(MontadorException::ERROR_CODE error) {
+    // TODO ALTERAR Secao
+    if (error < MontadorException::SECAO_ERRADA) {
+        return "Erro Semântico";
+    } else if (error >= MontadorException::TOKEN_INVALIDO) {
+        return "Erro Léxico";
+    } else {
+        return "Erro Sintático";
+    }
+}
+
+bool MontadorErrors::contemErrors() {
+    return !errors.empty();
+}
+
+void MontadorErrors::printErrors() {
+    for (const auto& error: errors) {
+        std::cout << errorTipo(error.code) << ": " << mensagemError(error.code) <<
+        "\nNa linha (" << to_string(error.numLinha) << "): " << error.linha;
+    }
+}
+
+const char *PassagemException::what() const noexcept {
+    this->errors->printErrors();
+    return this->passagem.c_str();
+}
+
 
 #endif

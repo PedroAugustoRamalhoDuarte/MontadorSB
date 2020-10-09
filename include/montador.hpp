@@ -10,6 +10,7 @@
 class Montador {
 public:
     ArquivoHandler *arquivo;
+    MontadorErrors errors;
 
     map<string, int> tabelaDeSimbolos = {};
     // Tabela de instrucoes com o nome de instrução/opcode
