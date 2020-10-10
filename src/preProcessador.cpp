@@ -34,7 +34,7 @@ void PreProcessador::setSecao(const string &s) {
     }
 }
 
-void PreProcessador::analisaSecao(const string &operacao, const string &op1, const string &linha, int numLinha) {
+void PreProcessador::analisaSecao(const string &operacao, const string &op1) {
     if (operacao != "SECTION") {
         switch (secao) {
             case NENHUMA:
@@ -63,53 +63,56 @@ void PreProcessador::run() {
     string linha, ultimoRotulo;
     bool printLine = true;
     secao = NENHUMA;
-    int contadorLinha = 1;
-
+    int contadorLinha = 0;
     while (!arquivo->hasEnd()) {
-        arquivo->getLine(&linha);
+        try {
 
-        Linha l = coletaTermosDaLinha(linha);
+            arquivo->getLine(&linha);
+            contadorLinha++;
+            Linha l = coletaTermosDaLinha(linha);
 
-        // Somente rótulo na linha #006
-        if (somenteRotulo(l)) {
-            ultimoRotulo = l.rotulo;
-            continue;
-        } else {
-            if (!ultimoRotulo.empty()) {
-                if (l.rotulo.empty()) {
-                    l.rotulo = ultimoRotulo;
+            // Somente rótulo na linha #006
+            if (somenteRotulo(l)) {
+                ultimoRotulo = l.rotulo;
+                continue;
+            } else {
+                if (!ultimoRotulo.empty()) {
+                    if (l.rotulo.empty()) {
+                        l.rotulo = ultimoRotulo;
+                    } else {
+                        throw MontadorException(MontadorException::DOIS_ROTULOS);
+                    }
+                }
+                ultimoRotulo = "";
+            }
+
+            analisaSecao(l.operacao, l.op1);
+
+            if (l.operacao == "EQU") {
+                tabelaDeDefinicoes[l.rotulo] = l.op1;
+            } else if (l.operacao == "IF") {
+                if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op1)) {
+                    printLine = !(tabelaDeDefinicoes[l.op1] == "0");
                 } else {
-                    throw MontadorException(MontadorException::DOIS_ROTULOS);
+                    throw MontadorException(MontadorException::ROTULO_AUSENTE);
+                }
+            } else {
+                if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op1)) {
+                    l.op1 = tabelaDeDefinicoes[l.op1];
+                }
+                if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op2)) {
+                    l.op2 = tabelaDeDefinicoes[l.op2];
+                }
+                if (printLine) {
+                    arquivoPreProcessado->writeLine(linhaToString(l));
+                } else {
+                    printLine = true;
                 }
             }
-            ultimoRotulo = "";
+        } catch (MontadorException &e) {
+            errors.adicionaError(e.error, linha, contadorLinha);
+            continue;
         }
-
-        analisaSecao(l.operacao, l.op1, linha, contadorLinha);
-
-        if (l.operacao == "EQU") {
-            tabelaDeDefinicoes[l.rotulo] = l.op1;
-        } else if (l.operacao == "IF") {
-            if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op1)) {
-                printLine = !(tabelaDeDefinicoes[l.op1] == "0");
-            } else {
-                throw MontadorException(MontadorException::ROTULO_AUSENTE);
-            }
-        } else {
-            if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op1)) {
-                l.op1 = tabelaDeDefinicoes[l.op1];
-            }
-            if (tabelaDeDefinicoes.end() != tabelaDeDefinicoes.find(l.op2)) {
-                l.op2 = tabelaDeDefinicoes[l.op2];
-            }
-            if (printLine) {
-                arquivoPreProcessado->writeLine(linhaToString(l));
-            } else {
-                printLine = true;
-            }
-        }
-
-        contadorLinha += 1;
     }
     arquivo->arquivo.close();
     arquivoPreProcessado->finishWrite();

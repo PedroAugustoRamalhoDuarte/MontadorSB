@@ -31,6 +31,7 @@ string trocarTipo(string nome, const string &terminacao) {
 }
 
 Linha coletaTermosDaLinha(const string &linha, bool isToThrowErros) {
+    // Desconsiderar tabulações #002
     string elementos[4];
     int cont = 0;
     bool jaPulou = false;
@@ -52,6 +53,7 @@ Linha coletaTermosDaLinha(const string &linha, bool isToThrowErros) {
             }
         }
 
+        // Parse do COPY com vírgula #005
         if (ch == ' ' or ch == ',' or (ch == ':' and cont == 0)) {
             if (!jaPulou)
                 cont++;
@@ -71,7 +73,7 @@ Linha coletaTermosDaLinha(const string &linha, bool isToThrowErros) {
         }
     }
 
-    // Transformar todos os elementos em caixa alta #0001
+    // Transformar todos os elementos em caixa alta #001
     Linha l = {toUpperCase(elementos[0]),
                toUpperCase(elementos[1]),
                toUpperCase(elementos[2]),

@@ -19,6 +19,11 @@ int main(int argc, char **argv) {
                 // ex: ./montador -p myprogram.asm
                 PreProcessador preProcessador(argv[2], true);
                 preProcessador.run();
+                if (preProcessador.errors.contemErrors()) {
+                    std::cout << "Erro no pré-processamento:" << std::endl;
+                    std::cout << preProcessador.errors.mensagemTodosErros() << std::endl;
+                }
+                std::cout << "Foi gerado o arquivo: " << trocarTipo(argv[2], ".pre") << std::endl;
             } else if (strcmp(argv[1], "-o") == 0) {
                 std::cout << "Montando: " << argv[2] << endl;
                 // ex: /montador -c myprogram.pre

@@ -19,6 +19,7 @@ public:
     map<string, string> tabelaDeDefinicoes = {};
     ArquivoFisico *arquivo;
     ArquivoHandler *arquivoPreProcessado;
+    MontadorErrors errors;
 
     explicit PreProcessador(const string &nomeArquivo, bool isToWrite);
 
@@ -26,7 +27,7 @@ public:
 
     void setSecao(const string &s);
 
-    void analisaSecao(const string &operacao, const string &op1, const string &linha, int numLinha);
+    void analisaSecao(const string &operacao, const string &op1);
 
     void run();
 };
