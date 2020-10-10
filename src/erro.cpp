@@ -19,7 +19,7 @@ string MontadorErrors::mensagemError(MontadorException::ERROR_CODE error) {
         case MontadorException::ROTULO_AUSENTE:
             return "Declaração ou Rótulo Ausente";
         case MontadorException::ROTULO_REPETIDO:
-            return "Declarao ou Rótulo Repetido";
+            return "Declaração ou Rótulo Repetido";
         case MontadorException::OPERACAO_INVALIDA:
             return "Diretiva ou Instrução inválida";
         case MontadorException::SECAO_ERRADA:

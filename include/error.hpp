@@ -19,7 +19,7 @@ public:
         DOIS_ROTULOS, // Sintatico
         TEXT_FALTANTE, // Sintatico
         SECAO_INVALIDA, // Sintatico
-        TOKEN_INVALIDO, // lexico
+        TOKEN_INVALIDO, // Léxico
     } error;
 
     MontadorException(ERROR_CODE error) : std::exception() {
@@ -49,7 +49,6 @@ public:
 
     bool contemErrors();
 
-    void printErrors();
 };
 
 class PassagemException : public std::exception {
