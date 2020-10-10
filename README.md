@@ -1,3 +1,7 @@
+### Nome: Pedro Augusto Ramalho Duarte
+### Matrícula: 17/0163717
+### Escolha: Implementação de Erros
+
 # MontadorSB
 Repositório para o Trabalho 1 de Software Básico 2020/01, que consiste em fazer um montador para um assembly inventado.
 
