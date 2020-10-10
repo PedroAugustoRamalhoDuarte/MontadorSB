@@ -21,20 +21,29 @@ int Montador::tamInstrucao(const string &instrucao) {
     }
 };
 
-int Montador::isOperacaoValida(const Linha &linha) {
+void Montador::checkIfOperacaoValida(const Linha &linha) {
+    bool isValida;
     if (linha.operacao == "COPY") {
-        return !linha.op1.empty() and !linha.op2.empty();
-    } else if (linha.operacao == "STOP") {
-        return linha.op1.empty() and linha.op2.empty();
+        isValida = !linha.op1.empty() and !linha.op2.empty();
+    } else if (linha.operacao == "STOP" or linha.operacao == "SPACE") {
+        isValida = linha.op1.empty() and linha.op2.empty();
     } else {
-        bool isValida = !linha.op1.empty() and linha.op2.empty();
+        isValida = !linha.op1.empty() and linha.op2.empty();
         if (linha.operacao == "CONST") {
             // Validação da operação CONST (#003)
+            if (!isInteger(linha.op1)) {
+                throw MontadorException(MontadorException::OPERANDO_INVALIDO);
+            }
             isValida = isValida and isInteger(linha.op1);
         } else if (linha.operacao == "SECTION") {
+            if (linha.op1 != "TEXT" and linha.op1 != "DATA") {
+                throw MontadorException(MontadorException::OPERANDO_INVALIDO);
+            }
             isValida = isValida and (linha.op1 == "TEXT" or linha.op1 == "DATA");
         }
-        return isValida;
+    }
+    if (!isValida) {
+        throw MontadorException(MontadorException::QUANTIDADE_OPERANDO);
     }
 }
 
@@ -85,7 +94,7 @@ void Montador::primeiraPassagem() {
     }
 
     if (errors.contemErrors()) {
-        throw PassagemException("Primeira Passagem", &errors);
+        throw PassagemException("Primeira Passagem", errors.mensagemTodosErros());
     }
     // Voltar arquivo para o começo
     arquivo->resetFile();
@@ -111,20 +120,17 @@ string Montador::segundaPassagem() {
             // Procura operação na tabela de instruções
             if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
                 contadorPosicao += tamInstrucao(l.operacao);
-                if (isOperacaoValida(l)) {
-                    code += to_string(tabelaDeIntrucoes[l.operacao]) + ' ';
-                    if (!l.op1.empty()) {
-                        code += to_string(tabelaDeSimbolos[l.op1]) + ' ';
-                    }
-                    if (!l.op2.empty()) {
-                        code += to_string(tabelaDeSimbolos[l.op2]) + ' ';
-                    }
-                } else {
-                    throw MontadorException(MontadorException::OPERANDO_INVALIDO);
+                checkIfOperacaoValida(l);
+                code += to_string(tabelaDeIntrucoes[l.operacao]) + ' ';
+                if (!l.op1.empty()) {
+                    code += to_string(tabelaDeSimbolos[l.op1]) + ' ';
                 }
-
+                if (!l.op2.empty()) {
+                    code += to_string(tabelaDeSimbolos[l.op2]) + ' ';
+                }
             } else {
                 if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
+                    checkIfOperacaoValida(l);
                     if (l.operacao == "CONST") {
                         code += l.op1 + ' ';
                     } else if (l.operacao == "SPACE") {
@@ -141,7 +147,7 @@ string Montador::segundaPassagem() {
     }
 
     if (errors.contemErrors()) {
-        throw PassagemException("Segunda Passagem", &errors);
+        throw PassagemException("Segunda Passagem", errors.mensagemTodosErros());
     }
 
     return code;

@@ -40,10 +40,9 @@ string MontadorErrors::mensagemError(MontadorException::ERROR_CODE error) {
 }
 
 string MontadorErrors::errorTipo(MontadorException::ERROR_CODE error) {
-    // TODO ALTERAR Secao
     if (error < MontadorException::SECAO_ERRADA) {
         return "Erro Semântico";
-    } else if (error >= MontadorException::TOKEN_INVALIDO) {
+    } else if (error == MontadorException::TOKEN_INVALIDO) {
         return "Erro Léxico";
     } else {
         return "Erro Sintático";
@@ -54,17 +53,28 @@ bool MontadorErrors::contemErrors() {
     return !errors.empty();
 }
 
+string MontadorErrors::mensagemTodosErros() {
+    string errorMessage;
+    for (const auto &error: errors) {
+        errorMessage = errorMessage + errorTipo(error.code) + ": " + mensagemError(error.code) +
+        "\n Na linha (" + to_string(error.numLinha) + "): " + error.linha + "\n";
+    }
+    return errorMessage;
+}
+
 void MontadorErrors::printErrors() {
-    for (const auto& error: errors) {
+    for (const auto &error: errors) {
         std::cout << errorTipo(error.code) << ": " << mensagemError(error.code) <<
-        "\nNa linha (" << to_string(error.numLinha) << "): " << error.linha;
+                  std::endl << "Na linha (" << to_string(error.numLinha) << "): " << error.linha << std::endl;
     }
 }
 
 const char *PassagemException::what() const noexcept {
-    this->errors->printErrors();
     return this->passagem.c_str();
 }
 
+string PassagemException::mensagemCompleta() {
+    return "Erro na: " + this->passagem + "\n" + this->mensagem;
+}
 
 #endif

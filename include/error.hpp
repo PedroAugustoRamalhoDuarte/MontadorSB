@@ -10,16 +10,16 @@ using namespace std;
 class MontadorException : public std::exception {
 public:
     enum ERROR_CODE {
-        ROTULO_AUSENTE,
-        ROTULO_REPETIDO,
-        OPERACAO_INVALIDA,
-        SECAO_ERRADA,
-        QUANTIDADE_OPERANDO,
-        OPERANDO_INVALIDO,
-        TOKEN_INVALIDO,
-        DOIS_ROTULOS,
-        TEXT_FALTANTE,
-        SECAO_INVALIDA,
+        ROTULO_AUSENTE, // Semantico
+        ROTULO_REPETIDO, // Semantico
+        SECAO_ERRADA, // Semantico
+        OPERACAO_INVALIDA, // Sintatico
+        QUANTIDADE_OPERANDO, // Sintatico
+        OPERANDO_INVALIDO, // Sintatico
+        DOIS_ROTULOS, // Sintatico
+        TEXT_FALTANTE, // Sintatico
+        SECAO_INVALIDA, // Sintatico
+        TOKEN_INVALIDO, // lexico
     } error;
 
     MontadorException(ERROR_CODE error) : std::exception() {
@@ -43,7 +43,9 @@ public:
     static string mensagemError(MontadorException::ERROR_CODE);
 
     static string errorTipo(MontadorException::ERROR_CODE);
-m
+
+    string mensagemTodosErros();
+
     bool contemErrors();
 
     void printErrors();
@@ -51,13 +53,14 @@ m
 
 class PassagemException : public std::exception {
     string passagem;
+    string mensagem;
 public:
-    MontadorErrors *errors;
-
-    PassagemException(string passagem, MontadorErrors* errors) : std::exception() {
+    PassagemException(string passagem, string mensagem) : std::exception() {
         this->passagem = passagem;
-        this->errors = errors;
+        this->mensagem = mensagem;
     }
+
+    string mensagemCompleta();
 
     const char *what() const noexcept override;
 };

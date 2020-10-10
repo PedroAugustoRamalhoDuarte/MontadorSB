@@ -43,7 +43,7 @@ public:
 
     static int tamInstrucao(const string &instrucao);
 
-    static int isOperacaoValida(const Linha &linha);
+    static void checkIfOperacaoValida(const Linha &linha);
 
     void primeiraPassagem();
 
