@@ -53,6 +53,12 @@ Linha coletaTermosDaLinha(const string &linha, bool isToThrowErros) {
             }
         }
 
+        // Dois Rotulo na mesma linha
+        if (ch == ':' and cont != 0) {
+            std::cout << "DOIS" << std::endl;
+            throw MontadorException(MontadorException::DOIS_ROTULOS);
+        }
+
         // Parse do COPY com vírgula #005
         if (ch == ' ' or ch == ',' or (ch == ':' and cont == 0)) {
             if (!jaPulou)

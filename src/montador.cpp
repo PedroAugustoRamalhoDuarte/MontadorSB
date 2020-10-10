@@ -119,6 +119,7 @@ string Montador::segundaPassagem() {
             if (tabelaDeIntrucoes.end() != tabelaDeIntrucoes.find(l.operacao)) {
                 contadorPosicao += tamInstrucao(l.operacao);
                 checkIfOperacaoValida(l);
+                // Monta o código
                 code += to_string(tabelaDeIntrucoes[l.operacao]) + ' ';
                 if (!l.op1.empty()) {
                     code += to_string(tabelaDeSimbolos[l.op1]) + ' ';
@@ -129,6 +130,7 @@ string Montador::segundaPassagem() {
             } else {
                 if (tabelaDeDiretivas.end() != tabelaDeDiretivas.find(l.operacao)) {
                     checkIfOperacaoValida(l);
+                    // Monta o código
                     if (l.operacao == "CONST") {
                         code += l.op1 + ' ';
                     } else if (l.operacao == "SPACE") {

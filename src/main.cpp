@@ -10,9 +10,14 @@ int main(int argc, char **argv) {
             std::cout << "Montando programa: " << argv[1] << endl;
             PreProcessador preProcessador(argv[1], false);
             preProcessador.run();
+            if (preProcessador.errors.contemErrors()) {
+                std::cout << "Erro no pré-processamento:" << std::endl;
+                std::cout << preProcessador.errors.mensagemTodosErros() << std::endl;
+            }
             Montador montador(preProcessador.arquivoPreProcessado);
             montador.primeiraPassagem();
             gerarArquivoObjeto(montador.segundaPassagem(), argv[1]);
+            std::cout << "Foi gerado o arquivo: " << trocarTipo(argv[1], ".obj") << std::endl;
         } else if (argc == 3) {
             if (strcmp(argv[1], "-p") == 0) {
                 std::cout << "Pré-processando: " << argv[2] << endl;
@@ -31,6 +36,7 @@ int main(int argc, char **argv) {
                 Montador montador(arquivoFisico);
                 montador.primeiraPassagem();
                 gerarArquivoObjeto(montador.segundaPassagem(), argv[2]);
+                std::cout << "Foi gerado o arquivo: " << trocarTipo(argv[2], ".obj") << std::endl;
             } else {
                 throw invalid_argument("Argumento inválido, utilize -p, -o ou nada");
             }
