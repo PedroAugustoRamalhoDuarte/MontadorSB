@@ -14,17 +14,16 @@ bool map_compare(Map const &lhs, Map const &rhs) {
 
 
 TEST_CASE("Primeira Passagem Erros", "Montador") {
-
     SECTION("Rótulo Duplicado") {
         auto *arquivoFisico = new ArquivoFisico("../test/files/rotuloDuplicado.asm");
         Montador montador(arquivoFisico);
-        REQUIRE_THROWS(montador.primeiraPassagem());
-        // REQUIRE_THROWS_WITH(montador.primeiraPassagem(), "Error -> simbolo redefinido");
+        montador.primeiraPassagem();
+        REQUIRE(montador.errors.contemErrors());
     }SECTION("Operação não identificada") {
         auto *arquivoFisico = new ArquivoFisico("../test/files/operacaoInexistente.asm");
         Montador montador(arquivoFisico);
-        REQUIRE_THROWS(montador.primeiraPassagem());
-        //REQUIRE_THROWS_WITH(montador.primeiraPassagem(), "Erro -> Operação não identificada");
+        montador.primeiraPassagem();
+        REQUIRE(montador.errors.contemErrors());
     }
 }
 

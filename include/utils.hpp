@@ -25,7 +25,7 @@ bool somenteRotulo(const Linha &linha);
 
 string trocarTipo(string nome, const string &terminacao);
 
-Linha coletaTermosDaLinha(const string &linha);
+Linha coletaTermosDaLinha(const string &linha, bool isToThrowErros = true);
 
 string linhaToString(const Linha &linha);
 

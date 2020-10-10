@@ -30,7 +30,7 @@ string trocarTipo(string nome, const string &terminacao) {
     }
 }
 
-Linha coletaTermosDaLinha(const string &linha) {
+Linha coletaTermosDaLinha(const string &linha, bool isToThrowErros) {
     string elementos[4];
     int cont = 0;
     bool jaPulou = false;
@@ -43,6 +43,15 @@ Linha coletaTermosDaLinha(const string &linha) {
             // Ignora os comentários (#004)
             break;
         }
+
+        if (cont == 4) {
+            if (isToThrowErros) {
+                throw MontadorException(MontadorException::QUANTIDADE_OPERANDO);
+            } else {
+                break;
+            }
+        }
+
         if (ch == ' ' or ch == ',' or (ch == ':' and cont == 0)) {
             if (!jaPulou)
                 cont++;
@@ -56,7 +65,7 @@ Linha coletaTermosDaLinha(const string &linha) {
     for (auto &elemento : elementos) {
         if (elementos[1] != "CONST" and elementos[1] != "EQU") {
             // Verifica se o tempo
-            if (!elemento.empty() and !isVariavelValida(elemento)) {
+            if (!elemento.empty() and !isVariavelValida(elemento) and isToThrowErros) {
                 throw MontadorException(MontadorException::TOKEN_INVALIDO);
             }
         }

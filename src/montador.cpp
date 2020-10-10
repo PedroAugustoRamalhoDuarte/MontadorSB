@@ -93,9 +93,6 @@ void Montador::primeiraPassagem() {
         }
     }
 
-    if (errors.contemErrors()) {
-        throw PassagemException("Primeira Passagem", errors.mensagemTodosErros());
-    }
     // Voltar arquivo para o começo
     arquivo->resetFile();
 }
@@ -103,12 +100,13 @@ void Montador::primeiraPassagem() {
 string Montador::segundaPassagem() {
     string linha;
     string code;
-    int contadorPosicao = 0, contadorLinha = 1;
+    int contadorPosicao = 0, contadorLinha = 0;
     while (!arquivo->hasEnd()) {
         try {
             arquivo->getLine(&linha);
             contadorLinha += 1;
-            Linha l = coletaTermosDaLinha(linha);
+
+            Linha l = coletaTermosDaLinha(linha, false);
 
             // Para cada operando
             if (l.operacao != "CONST" and l.operacao != "SECTION") {
@@ -147,7 +145,7 @@ string Montador::segundaPassagem() {
     }
 
     if (errors.contemErrors()) {
-        throw PassagemException("Segunda Passagem", errors.mensagemTodosErros());
+        throw PassagemException("Montagem", errors.mensagemTodosErros());
     }
 
     return code;

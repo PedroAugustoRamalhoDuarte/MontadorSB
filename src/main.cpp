@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
                 // ex: ./montador -p myprogram.asm
                 PreProcessador preProcessador(argv[2], true);
                 preProcessador.run();
-            } else if (strcmp(argv[1], "-c") == 0) {
+            } else if (strcmp(argv[1], "-o") == 0) {
                 std::cout << "Montando: " << argv[2] << endl;
                 // ex: /montador -c myprogram.pre
                 auto *arquivoFisico = new ArquivoFisico(argv[2]);
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
                 montador.primeiraPassagem();
                 gerarArquivoObjeto(montador.segundaPassagem(), argv[2]);
             } else {
-                throw invalid_argument("Argumento inválido, utilize -p, -c ou nada");
+                throw invalid_argument("Argumento inválido, utilize -p, -o ou nada");
             }
         }
     } catch (PassagemException &e) {

@@ -46,6 +46,7 @@ public:
 
     string mensagemTodosErros();
 
+
     bool contemErrors();
 
     void printErrors();

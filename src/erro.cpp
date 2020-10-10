@@ -7,7 +7,7 @@
 using namespace std;
 
 const char *MontadorException::what() const noexcept {
-    return (const char *) this->error;
+    return to_string(this->error).c_str();
 }
 
 void MontadorErrors::adicionaError(MontadorException::ERROR_CODE error, string linha, int numLinha) {
@@ -57,20 +57,14 @@ string MontadorErrors::mensagemTodosErros() {
     string errorMessage;
     for (const auto &error: errors) {
         errorMessage = errorMessage + errorTipo(error.code) + ": " + mensagemError(error.code) +
-        "\n Na linha (" + to_string(error.numLinha) + "): " + error.linha + "\n";
+                       "\nNa linha (" + to_string(error.numLinha) + "): " + error.linha + "\n" +
+                       "-----------------------------------------------------------------" + "\n";
     }
     return errorMessage;
 }
 
-void MontadorErrors::printErrors() {
-    for (const auto &error: errors) {
-        std::cout << errorTipo(error.code) << ": " << mensagemError(error.code) <<
-                  std::endl << "Na linha (" << to_string(error.numLinha) << "): " << error.linha << std::endl;
-    }
-}
-
 const char *PassagemException::what() const noexcept {
-    return this->passagem.c_str();
+    return (this->passagem + this->mensagem).c_str();
 }
 
 string PassagemException::mensagemCompleta() {
