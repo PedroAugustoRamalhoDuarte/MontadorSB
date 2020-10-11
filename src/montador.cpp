@@ -54,6 +54,7 @@ void Montador::primeiraPassagem() {
         try {
             arquivo->getLine(&linha);
             contadorLinha += 1;
+            if (linha.empty()) continue;
             Linha l = coletaTermosDaLinha(linha);
 
             if (contadorLinha == 1 and (l.operacao != "SECTION" or l.op1 != "TEXT")) {
@@ -105,7 +106,7 @@ string Montador::segundaPassagem() {
         try {
             arquivo->getLine(&linha);
             contadorLinha += 1;
-
+            if (linha.empty()) continue;
             Linha l = coletaTermosDaLinha(linha, false);
 
             // Para cada operando

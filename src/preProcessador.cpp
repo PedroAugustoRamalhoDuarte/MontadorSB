@@ -69,6 +69,7 @@ void PreProcessador::run() {
 
             arquivo->getLine(&linha);
             contadorLinha++;
+            if (linha.empty()) continue;
             Linha l = coletaTermosDaLinha(linha, false);
 
             // Somente rótulo na linha #006
