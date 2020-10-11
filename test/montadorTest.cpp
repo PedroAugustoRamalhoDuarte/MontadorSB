@@ -71,7 +71,6 @@ TEST_CASE("Segunda Passagem sem erros", "") {
         auto *arquivoFisico = new ArquivoFisico("../test/files/bin.asm");
         Montador montador(arquivoFisico);
         montador.primeiraPassagem();
-
         REQUIRE(montador.segundaPassagem() ==
                 "12 29 10 29 4 28 11 30 3 28 11 31 10 29 2 31 11 31 13 31 9 30 29 10 29 7 4 14 2 0 0 0 ");
     }SECTION("exemplo3") {

@@ -26,5 +26,11 @@ TEST_CASE("ColetaTermos da Linha", "[utils]") {
         REQUIRE(linha.operacao == "SUB");
         REQUIRE(linha.op1 == "N1");
         REQUIRE(linha.op2.empty());
+    }SECTION("com tab") {
+        Linha linha = coletaTermosDaLinha("   SUB N1");
+        REQUIRE(linha.rotulo.empty());
+        REQUIRE(linha.operacao == "SUB");
+        REQUIRE(linha.op1 == "N1");
+        REQUIRE(linha.op2.empty());
     }
 }

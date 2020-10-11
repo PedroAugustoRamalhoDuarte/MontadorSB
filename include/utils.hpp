@@ -25,10 +25,18 @@ bool somenteRotulo(const Linha &linha);
 
 string trocarTipo(string nome, const string &terminacao);
 
-Linha coletaTermosDaLinha(const string &linha, bool isToThrowErros = true);
+Linha coletaTermosDaLinha(string linha, bool isToThrowErros = true);
 
 string linhaToString(const Linha &linha);
 
 void gerarArquivoObjeto(string codigo, string filename);
+
+std::string &ltrim(std::string &s);
+
+// trim from end
+std::string &rtrim(std::string &s);
+
+// trim from both ends
+std::string &trim(std::string &s);
 
 #endif

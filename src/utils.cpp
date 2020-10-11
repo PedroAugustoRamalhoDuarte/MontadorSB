@@ -30,11 +30,12 @@ string trocarTipo(string nome, const string &terminacao) {
     }
 }
 
-Linha coletaTermosDaLinha(const string &linha, bool isToThrowErros) {
-    // Desconsiderar tabulações #002
+Linha coletaTermosDaLinha(string linha, bool isToThrowErros) {
     string elementos[4];
     int cont = 0;
     bool jaPulou = false;
+    // Desconsiderar tabulações #002
+    linha = trim(linha);
     // Se não tiver rótulo, começa preenchendo instrução
     if (string::npos == linha.find(':'))
         cont++;
@@ -109,6 +110,25 @@ void gerarArquivoObjeto(string codigo, string filename) {
     auto *arquivoFisico = new ArquivoFisico(trocarTipo(filename, ".obj").c_str(), true);
     arquivoFisico->writeLine(codigo);
     arquivoFisico->finishWrite();
+}
+
+// trim from start
+std::string &ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+                                    std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
+}
+
+// trim from end
+std::string &rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+                         std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+
+// trim from both ends
+std::string &trim(std::string &s) {
+    return ltrim(rtrim(s));
 }
 
 #endif
